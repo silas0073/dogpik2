@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Greyhound Oracle v25</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f2ed;color:#1a1a1a}
+    .header{background:#1a1a1a;color:#fff;padding:16px 24px;display:flex;align-items:center;gap:20px}
+    .title{font-size:32px;font-weight:900;letter-spacing:-1px}
+    .title span{color:#c8a84a}
+    .subtitle{font-size:11px;color:#666;margin-top:4px}
+    .live-badge{background:#e8f4ec;color:#1a6b3a;border:1px solid #6bbf8c;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .tabs{background:#fff;border-bottom:2px solid #e8e4de;display:flex;padding:0 24px}
+    .tab{padding:12px 20px;border:none;border-bottom:3px solid transparent;background:transparent;font-size:13px;cursor:pointer;color:#888}
+    .tab.active{border-bottom-color:#1a6b3a;color:#1a6b3a;font-weight:700}
+    .main{max-width:1100px;margin:0 auto;padding:20px 24px;display:flex;gap:16px}
+    .sidebar{width:200px;flex-shrink:0}
+    .sidebar-title{font-size:9px;font-weight:700;letter-spacing:2.5px;color:#888;text-transform:uppercase;margin-bottom:8px}
+    .state-filters{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+    .state-btn{padding:3px 8px;background:#f4f4f4;border:1px solid #ddd;color:#777;font-size:9px;font-weight:600;border-radius:3px;cursor:pointer}
+    .state-btn.active{background:#1a6b3a;border-color:#1a6b3a;color:#fff}
+    .meeting-btn{display:block;width:100%;padding:9px 10px;text-align:left;background:#fff;border:1px solid #e8e4de;border-left:3px solid #1a6b3a;border-radius:4px;margin-bottom:4px;cursor:pointer}
+    .meeting-btn:hover{background:#f8f6f2}
+    .meeting-btn.active{background:#e8f4ec;border-color:#1a6b3a}
+    .meeting-name{font-size:12px;font-weight:500;color:#333}
+    .meeting-meta{display:flex;justify-content:space-between;margin-top:3px;font-size:9px;color:#aaa}
+    .panel{flex:1;min-width:0}
+    .placeholder{text-align:center;padding:80px 20px;color:#aaa}
+    .meeting-header{border-radius:6px;padding:14px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;color:#fff}
+    .race-btn{display:flex;align-items:center;gap:12px;padding:11px 16px;background:#fff;border:1px solid #e8e4de;border-left:3px solid #1a6b3a;border-radius:5px;margin-bottom:6px;cursor:pointer;width:100%;text-align:left}
+    .race-btn:hover{background:#f8f6f2}
+    .race-num{font-size:18px;font-weight:700;width:32px;color:#1a6b3a}
+    .race-info{flex:1}
+    .race-name{font-size:12px;font-weight:500}
+    .race-meta{font-size:10px;color:#aaa;margin-top:2px}
+    .race-time{font-size:17px;font-weight:700;color:#1a6b3a}
+    .back-btn{padding:6px 14px;background:#fff;border:1px solid #ddd;border-radius:4px;font-size:12px;cursor:pointer;margin-bottom:12px}
+    .race-nav{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:12px}
+    .race-nav-btn{width:30px;height:30px;border:1px solid #ddd;background:#f4f4f4;color:#888;font-size:10px;font-weight:700;border-radius:4px;cursor:pointer}
+    .race-nav-btn.active{background:#1a6b3a;border-color:#1a6b3a;color:#fff}
+    .card{background:#fff;border:1px solid #e8e4de;border-radius:6px;overflow:hidden;margin-bottom:8px}
+    .card-header{padding:14px 18px;background:#f8f6f2;border-bottom:1px solid #e8e4de;display:flex;justify-content:space-between;align-items:center}
+    .card-title{font-size:9px;font-weight:700;letter-spacing:2.5px;color:#888;text-transform:uppercase;margin-bottom:4px}
+    .race-full-name{font-size:20px;font-weight:700}
+    table{width:100%;border-collapse:collapse}
+    th{padding:8px 12px;font-size:9px;letter-spacing:1.5px;color:#999;text-align:left;font-weight:700;text-transform:uppercase;border-bottom:2px solid #f0ece6}
+    td{padding:9px 12px;border-bottom:1px solid #f5f2ed}
+    tr:hover td{background:#f8f6f2}
+    .box-chip{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:3px;color:#fff;font-size:12px;font-weight:700}
+    .ai-btn{width:100%;padding:13px;background:#1a6b3a;border:none;color:#fff;font-size:13px;font-weight:700;border-radius:5px;cursor:pointer;margin-bottom:8px}
+    .ai-btn:hover{background:#155a30}
+    .ai-result{background:#f0f9f4;border:1px solid #6bbf8c;border-radius:6px;padding:14px;margin-bottom:8px}
+    .ai-label{font-size:9px;font-weight:700;letter-spacing:2px;color:#888;text-transform:uppercase;margin-bottom:8px}
+    .ai-winner{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .ai-name{font-size:17px;font-weight:700}
+    .ai-analysis{font-size:12px;color:#555;line-height:1.6;margin-bottom:6px}
+    .ai-bestbet{font-size:12px;color:#1a6b3a;font-weight:600}
+    .loading{text-align:center;padding:16px;color:#888;font-size:12px}
+    .status-bar{padding:5px 24px;font-size:11px;border-bottom:1px solid #ddd}
+    .footer{text-align:center;padding:16px 0;border-top:1px solid #e8e4de;margin-top:32px;font-size:10px;color:#bbb;letter-spacing:1px}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="title">GREYHOUND <span>ORACLE</span></div>
+    <div class="subtitle" id="hdr-sub">Loading...</div>
+  </div>
+  <div id="live-badge"></div>
+</div>
+
+<div id="status-bar" class="status-bar" style="background:#fff8e8;color:#b8860b">Loading live race data...</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('upcoming')">Upcoming</button>
+  <button class="tab" onclick="showTab('results')">Results</button>
+</div>
+
+<div class="main" id="upcoming-tab">
+  <div class="sidebar">
+    <div class="sidebar-title">Meetings</div>
+    <div class="state-filters" id="state-filters"></div>
+    <div id="meeting-list"></div>
+  </div>
+  <div class="panel" id="main-panel">
+    <div class="placeholder">
+      <div style="font-size:24px;color:#ccc;margin-bottom:8px">Select a Meeting</div>
+      <div>Choose a venue from the sidebar to view the race card</div>
+    </div>
+  </div>
+</div>
+
+<div id="results-tab" style="display:none;max-width:1100px;margin:0 auto;padding:20px 24px">
+  <div class="placeholder" style="color:#aaa">No results yet — simulate a race result first</div>
+</div>
+
+<script type="module">
+const BOX_COLORS = ['#1a6b3a','#c0392b','#1a4a8c','#f39c12','#6b1a6b','#2c3e50','#c0392b','#1a6b6b'];
+const STATE_HUE = {NSW:'#1a6b3a',VIC:'#1a4a8c',QLD:'#8c3a1a',WA:'#6b1a6b',SA:'#1a6b6b',TAS:'#3a1a6b'};
+
+let meetings = [];
+let selState = 'ALL';
+let selMeeting = null;
+let selRace = null;
+let picks = {};
+
+function boxChip(n, size=22) {
+  return `<span class="box-chip" style="width:${size}px;height:${size}px;background:${BOX_COLORS[(n-1)%BOX_COLORS.length]};font-size:${size*.5}px">${n}</span>`;
+}
+
+function fmtTime(iso) {
+  return new Date(iso).toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'});
+}
+
+function getMins(iso) {
+  return Math.max(0, Math.floor((new Date(iso) - Date.now()) / 60000));
+}
+
+window.showTab = function(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='upcoming')||(i===1&&tab==='results')));
+  document.getElementById('upcoming-tab').style.display = tab==='upcoming' ? 'flex' : 'none';
+  document.getElementById('results-tab').style.display = tab==='results' ? 'block' : 'none';
+};
+
+window.selectState = function(s) {
+  selState = s;
+  selMeeting = null;
+  selRace = null;
+  renderSidebar();
+  renderMain();
+};
+
+window.selectMeeting = function(id) {
+  selMeeting = id;
+  selRace = null;
+  renderSidebar();
+  renderMain();
+};
+
+window.selectRace = function(id) {
+  selRace = id;
+  renderMain();
+};
+
+window.getAIPick = async function(raceId) {
+  const m = meetings.find(x => x.races.some(r => r.id === raceId));
+  const race = m && m.races.find(r => r.id === raceId);
+  if (!race) return;
+
+  document.getElementById('ai-area-' + raceId).innerHTML = '<div class="loading">Analysing form data...</div>';
+
+  const prompt = `You are an expert greyhound racing analyst. Analyze these runners for ${race.raceName} at ${m.name} (${race.distance}m, ${race.grade}).
+
+Runners:
+${race.runners.map(r => `Box ${r.number}: ${r.name} | Trainer: ${r.trainer} | Best: ${r.bestTime}s | Win: $${r.odds} Plc: $${r.placeOdds}`).join('\n')}
+
+Respond ONLY with valid JSON, no markdown:
+{"winner":{"number":1,"name":"Name","confidence":"High"},"top3":[{"number":1,"name":"Name","reason":"brief"},{"number":2,"name":"Name","reason":"brief"},{"number":3,"name":"Name","reason":"brief"}],"analysis":"2 sentences.","bestBet":"Win","value":"brief"}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:600, messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    picks[raceId] = JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+  } catch(e) {
+    const fb = race.runners.reduce((a,b) => b.odds < a.odds ? b : a);
+    picks[raceId] = {winner:{number:fb.number,name:fb.name,confidence:'Medium'},top3:[],analysis:'Based on market pricing and form figures.',bestBet:'Win',value:'Market favourite.'};
+  }
+  renderMain();
+};
+
+function renderSidebar() {
+  const states = ['ALL', ...Array.from(new Set(meetings.map(m => m.state))).sort()];
+  document.getElementById('state-filters').innerHTML = states.map(s =>
+    `<button class="state-btn ${selState===s?'active':''}" onclick="selectState('${s}')" style="${selState===s?'background:'+( STATE_HUE[s]||'#1a6b3a')+';border-color:'+(STATE_HUE[s]||'#1a6b3a')+';color:#fff':''}">${s}</button>`
+  ).join('');
+
+  const filtered = selState === 'ALL' ? meetings : meetings.filter(m => m.state === selState);
+  document.getElementById('meeting-list').innerHTML = filtered.map(m => {
+    const col = STATE_HUE[m.state] || '#1a6b3a';
+    return `<button class="meeting-btn ${selMeeting===m.id?'active':''}" onclick="selectMeeting('${m.id}')" style="border-left-color:${col}">
+      <div class="meeting-name" style="color:${selMeeting===m.id?col:'#333'}">${m.name}</div>
+      <div class="meeting-meta"><span style="color:${col}">${m.state}</span><span>0/${m.races.length}</span></div>
+    </button>`;
+  }).join('');
+}
+
+function renderMain() {
+  const panel = document.getElementById('main-panel');
+  if (!selMeeting) {
+    panel.innerHTML = '<div class="placeholder"><div style="font-size:24px;color:#ccc;margin-bottom:8px">Select a Meeting</div><div>Choose a venue from the sidebar to view the race card</div></div>';
+    return;
+  }
+  const m = meetings.find(x => x.id === selMeeting);
+  if (!m) return;
+  const col = STATE_HUE[m.state] || '#1a6b3a';
+
+  if (!selRace) {
+    panel.innerHTML = `
+      <div class="meeting-header" style="background:${col}">
+        <div>
+          <div style="font-size:9px;letter-spacing:3px;opacity:.7">${m.state} · ${m.races.length} RACES</div>
+          <div style="font-size:24px;font-weight:900">${m.name}</div>
+        </div>
+      </div>
+      ${m.races.map(r => {
+        const mins = getMins(r.startTime);
+        const urgency = mins < 5 ? '#c0392b' : mins < 15 ? '#e67e22' : col;
+        return `<button class="race-btn" style="border-left-color:${urgency}" onclick="selectRace('${r.id}')">
+          <div class="race-num" style="color:${col}">R${r.raceNumber}</div>
+          <div class="race-info">
+            <div class="race-name">${r.raceName}</div>
+            <div class="race-meta">${fmtTime(r.startTime)} · ${r.grade} · ${r.runners?r.runners.length:0} runners</div>
+          </div>
+          <div class="race-time" style="color:${urgency}">${mins}m</div>
+        </button>`;
+      }).join('')}`;
+    return;
+  }
+
+  const race = m.races.find(r => r.id === selRace);
+  if (!race) return;
+  const pick = picks[race.id];
+  const mins = getMins(race.startTime);
+  const urgency = mins < 5 ? '#c0392b' : mins < 15 ? '#e67e22' : col;
+
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <button class="back-btn" onclick="selRace=null;renderMain()">← Back</button>
+      <div class="race-nav">
+        ${m.races.map(r => `<button class="race-nav-btn ${r.id===selRace?'active':''}" onclick="selectRace('${r.id}')" style="${r.id===selRace?'background:'+col+';border-color:'+col+';color:#fff':''}"">R${r.raceNumber}</button>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-header">
+        <div>
+          <div class="card-title" style="color:${col}">${m.name.toUpperCase()} · ${race.distance}M · ${race.grade.toUpperCase()}</div>
+          <div class="race-full-name">${race.raceName}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:9px;color:#aaa;letter-spacing:1px">STARTS IN</div>
+          <div style="font-size:28px;font-weight:900;color:${urgency};line-height:1">${mins}m</div>
+          <div style="font-size:10px;color:#888">${fmtTime(race.startTime)}</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Box</th><th>Dog</th><th>Trainer</th><th>Best</th><th>Win</th><th>Place</th></tr></thead>
+          <tbody>
+            ${race.runners && race.runners.length > 0 ? race.runners.map(r => `
+              <tr>
+                <td>${boxChip(r.number)}</td>
+                <td style="font-size:12px;font-weight:${pick&&pick.winner.number===r.number?700:400}">${r.name}</td>
+                <td style="font-size:11px;color:#888">${r.trainer}</td>
+                <td style="font-size:11px;color:#1a6b3a;font-weight:600">${r.bestTime}s</td>
+                <td style="font-size:12px;font-weight:700;color:#b8860b">$${r.odds}</td>
+                <td style="font-size:12px;color:#1a4a8c">$${r.placeOdds}</td>
+              </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:20px">No runner data available</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    ${!pick ? `<button class="ai-btn" onclick="getAIPick('${race.id}')">Get AI Selections →</button>` : ''}
+    <div id="ai-area-${race.id}">
+      ${pick ? `
+        <div class="ai-result">
+          <div class="ai-label">AI Selection</div>
+          <div class="ai-winner">
+            ${boxChip(pick.winner.number, 28)}
+            <span class="ai-name">${pick.winner.name}</span>
+            <span style="font-size:11px;color:#1a6b3a;font-weight:600">Confidence: ${pick.winner.confidence}</span>
+          </div>
+          <div class="ai-analysis">${pick.analysis}</div>
+          <div class="ai-bestbet">Best Bet: ${pick.bestBet} · ${pick.value}</div>
+        </div>
+        ${pick.top3 && pick.top3.length > 0 ? `
+        <div class="card" style="padding:14px">
+          <div class="card-title" style="margin-bottom:10px">Top 3 Selections</div>
+          <div style="display:flex;gap:8px">
+            ${pick.top3.map((sel,i) => {
+              const medals = ['🥇','🥈','🥉'];
+              const runner = race.runners.find(r => r.number === sel.number);
+              return `<div style="flex:1;padding:10px;background:${i===0?'#fffdf0':i===1?'#f8f8f8':'#fdf5f0'};border:1px solid ${i===0?'#e8c84a':'#ddd'};border-radius:4px">
+                <div style="font-size:14px;margin-bottom:6px">${medals[i]}</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">${boxChip(sel.number,18)}<span style="font-size:12px;font-weight:600">${sel.name}</span></div>
+                <div style="font-size:10px;color:#888">${sel.reason}</div>
+                ${runner ? `<div style="margin-top:4px;font-size:11px;color:#b8860b;font-weight:700">$${runner.odds}</div>` : ''}
+              </div>`;
+            }).join('')}
+          </div>
+        </div>` : ''}
+      ` : ''}
+    </div>
+  `;
+}
+
+// Load live data
+try {
+  const r = await fetch('/.netlify/functions/races');
+  const d = await r.json();
+  if (d.meetings && d.meetings.length > 0) {
+    meetings = d.meetings;
+    document.getElementById('status-bar').style.background = '#e8f4ec';
+    document.getElementById('status-bar').style.color = '#1a6b3a';
+    document.getElementById('status-bar').innerHTML = '● Live data from thedogs.com.au · ' + meetings.length + ' meetings loaded';
+    document.getElementById('live-badge').innerHTML = '<span class="live-badge">● LIVE</span>';
+    document.getElementById('hdr-sub').textContent = meetings.length + ' MEETINGS · AUSTRALIA';
+  }
+} catch(e) {
+  document.getElementById('status-bar').style.background = '#fff8e8';
+  document.getElementById('status-bar').innerHTML = '⚠ Live data unavailable — ' + e.message;
+}
+
+renderSidebar();
+renderMain();
+</script>
+
+<div style="max-width:1100px;margin:0 auto;padding:0 24px">
+  <div class="footer">GREYHOUND ORACLE v25 · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED</div>
+</div>
+</body>
+</html>

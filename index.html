@@ -202,7 +202,7 @@ function GreyhoundTipster(){
   useEffect(()=>{ const t=setInterval(()=>tick(n=>n+1),30000); return()=>clearInterval(t); },[]);
 
   useEffect(()=>{
-    fetch('/api/races')
+    fetch('https://resplendent-biscochitos-d9fa5c.netlify.app/.netlify/functions/races')
       .then(r=>r.json())
       .then(d=>{
         if(d.meetings&&d.meetings.length>0){setMeetings(d.meetings);setIsLive(true);}
@@ -844,7 +844,7 @@ Respond ONLY with valid JSON, no markdown:
 
         <div style={{textAlign:"center",marginTop:32,padding:"16px 0",borderTop:"1px solid #e8e4de"}}>
           <div style={{fontSize:10,color:"#bbb",letterSpacing:1,fontFamily:"'DM Mono',monospace"}}>
-            GREYHOUND ORACLE · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED
+            GREYHOUND ORACLE · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED - *****
           </div>
         </div>
       </div>

@@ -1,881 +1,329 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Greyhound Oracle v19</title>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>* { box-sizing: border-box; margin: 0; padding: 0; } body { margin: 0; }</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Greyhound Oracle v25</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f2ed;color:#1a1a1a}
+    .header{background:#1a1a1a;color:#fff;padding:16px 24px;display:flex;align-items:center;gap:20px}
+    .title{font-size:32px;font-weight:900;letter-spacing:-1px}
+    .title span{color:#c8a84a}
+    .subtitle{font-size:11px;color:#666;margin-top:4px}
+    .live-badge{background:#e8f4ec;color:#1a6b3a;border:1px solid #6bbf8c;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .tabs{background:#fff;border-bottom:2px solid #e8e4de;display:flex;padding:0 24px}
+    .tab{padding:12px 20px;border:none;border-bottom:3px solid transparent;background:transparent;font-size:13px;cursor:pointer;color:#888}
+    .tab.active{border-bottom-color:#1a6b3a;color:#1a6b3a;font-weight:700}
+    .main{max-width:1100px;margin:0 auto;padding:20px 24px;display:flex;gap:16px}
+    .sidebar{width:200px;flex-shrink:0}
+    .sidebar-title{font-size:9px;font-weight:700;letter-spacing:2.5px;color:#888;text-transform:uppercase;margin-bottom:8px}
+    .state-filters{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+    .state-btn{padding:3px 8px;background:#f4f4f4;border:1px solid #ddd;color:#777;font-size:9px;font-weight:600;border-radius:3px;cursor:pointer}
+    .state-btn.active{background:#1a6b3a;border-color:#1a6b3a;color:#fff}
+    .meeting-btn{display:block;width:100%;padding:9px 10px;text-align:left;background:#fff;border:1px solid #e8e4de;border-left:3px solid #1a6b3a;border-radius:4px;margin-bottom:4px;cursor:pointer}
+    .meeting-btn:hover{background:#f8f6f2}
+    .meeting-btn.active{background:#e8f4ec;border-color:#1a6b3a}
+    .meeting-name{font-size:12px;font-weight:500;color:#333}
+    .meeting-meta{display:flex;justify-content:space-between;margin-top:3px;font-size:9px;color:#aaa}
+    .panel{flex:1;min-width:0}
+    .placeholder{text-align:center;padding:80px 20px;color:#aaa}
+    .meeting-header{border-radius:6px;padding:14px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;color:#fff}
+    .race-btn{display:flex;align-items:center;gap:12px;padding:11px 16px;background:#fff;border:1px solid #e8e4de;border-left:3px solid #1a6b3a;border-radius:5px;margin-bottom:6px;cursor:pointer;width:100%;text-align:left}
+    .race-btn:hover{background:#f8f6f2}
+    .race-num{font-size:18px;font-weight:700;width:32px;color:#1a6b3a}
+    .race-info{flex:1}
+    .race-name{font-size:12px;font-weight:500}
+    .race-meta{font-size:10px;color:#aaa;margin-top:2px}
+    .race-time{font-size:17px;font-weight:700;color:#1a6b3a}
+    .back-btn{padding:6px 14px;background:#fff;border:1px solid #ddd;border-radius:4px;font-size:12px;cursor:pointer;margin-bottom:12px}
+    .race-nav{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:12px}
+    .race-nav-btn{width:30px;height:30px;border:1px solid #ddd;background:#f4f4f4;color:#888;font-size:10px;font-weight:700;border-radius:4px;cursor:pointer}
+    .race-nav-btn.active{background:#1a6b3a;border-color:#1a6b3a;color:#fff}
+    .card{background:#fff;border:1px solid #e8e4de;border-radius:6px;overflow:hidden;margin-bottom:8px}
+    .card-header{padding:14px 18px;background:#f8f6f2;border-bottom:1px solid #e8e4de;display:flex;justify-content:space-between;align-items:center}
+    .card-title{font-size:9px;font-weight:700;letter-spacing:2.5px;color:#888;text-transform:uppercase;margin-bottom:4px}
+    .race-full-name{font-size:20px;font-weight:700}
+    table{width:100%;border-collapse:collapse}
+    th{padding:8px 12px;font-size:9px;letter-spacing:1.5px;color:#999;text-align:left;font-weight:700;text-transform:uppercase;border-bottom:2px solid #f0ece6}
+    td{padding:9px 12px;border-bottom:1px solid #f5f2ed}
+    tr:hover td{background:#f8f6f2}
+    .box-chip{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:3px;color:#fff;font-size:12px;font-weight:700}
+    .ai-btn{width:100%;padding:13px;background:#1a6b3a;border:none;color:#fff;font-size:13px;font-weight:700;border-radius:5px;cursor:pointer;margin-bottom:8px}
+    .ai-btn:hover{background:#155a30}
+    .ai-result{background:#f0f9f4;border:1px solid #6bbf8c;border-radius:6px;padding:14px;margin-bottom:8px}
+    .ai-label{font-size:9px;font-weight:700;letter-spacing:2px;color:#888;text-transform:uppercase;margin-bottom:8px}
+    .ai-winner{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .ai-name{font-size:17px;font-weight:700}
+    .ai-analysis{font-size:12px;color:#555;line-height:1.6;margin-bottom:6px}
+    .ai-bestbet{font-size:12px;color:#1a6b3a;font-weight:600}
+    .loading{text-align:center;padding:16px;color:#888;font-size:12px}
+    .status-bar{padding:5px 24px;font-size:11px;border-bottom:1px solid #ddd}
+    .footer{text-align:center;padding:16px 0;border-top:1px solid #e8e4de;margin-top:32px;font-size:10px;color:#bbb;letter-spacing:1px}
+  </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script>
-    window.__liveData = null;
-    console.log('Starting live fetch...');
-    fetch('/.netlify/functions/races')
-      .then(function(r){ return r.json(); })
-      .then(function(d){
-        console.log('Live data received, meetings:', d.meetings ? d.meetings.length : 0);
-        window.__liveData = d;
-        var evt = new Event('livedataready');
-        document.dispatchEvent(evt);
-      })
-      .catch(function(e){ console.error('Live fetch failed:', e.message); });
-  </script>
-  <script type="text/babel">
-    const { useState, useEffect } = React;
 
+<div class="header">
+  <div>
+    <div class="title">GREYHOUND <span>ORACLE</span></div>
+    <div class="subtitle" id="hdr-sub">Loading...</div>
+  </div>
+  <div id="live-badge"></div>
+</div>
 
+<div id="status-bar" class="status-bar" style="background:#fff8e8;color:#b8860b">Loading live race data...</div>
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-const VENUES = [
-  { id:"wentworthpark", name:"Wentworth Park",  state:"NSW", distances:[515,720] },
-  { id:"bulli",         name:"Bulli",           state:"NSW", distances:[390,460] },
-  { id:"grafton",       name:"Grafton",         state:"NSW", distances:[410,530] },
-  { id:"meadows",       name:"The Meadows",     state:"VIC", distances:[525,600] },
-  { id:"sandown",       name:"Sandown Park",    state:"VIC", distances:[515,595] },
-  { id:"ballarat",      name:"Ballarat",        state:"VIC", distances:[450,520] },
-  { id:"healesville",   name:"Healesville",     state:"VIC", distances:[300,457] },
-  { id:"albionpark",    name:"Albion Park",     state:"QLD", distances:[431,520] },
-  { id:"capalaba",      name:"Capalaba",        state:"QLD", distances:[431,520] },
-  { id:"ipswich",       name:"Ipswich",         state:"QLD", distances:[431,520] },
-  { id:"cannington",    name:"Cannington",      state:"WA",  distances:[403,520] },
-  { id:"gloucester",    name:"Gloucester Park", state:"WA",  distances:[485,600] },
-  { id:"anglepark",     name:"Angle Park",      state:"SA",  distances:[395,520] },
-  { id:"gawler",        name:"Gawler",          state:"SA",  distances:[400,520] },
-  { id:"launceston",    name:"Launceston",      state:"TAS", distances:[461,535] },
-  { id:"devonport",     name:"Devonport",       state:"TAS", distances:[461,535] },
-];
+<div class="tabs">
+  <button class="tab active" onclick="showTab('upcoming')">Upcoming</button>
+  <button class="tab" onclick="showTab('results')">Results</button>
+</div>
 
-const FIRST = ["Bolt","Shadow","Red","Night","Storm","Gold","Swift","Iron","Mystic","Blue","Desert","King","Phantom","Silver","Apex","Lucky","Black","Turbo","Wild","Crimson","Flash","Jet","Thunder","Comet","Bullet","Sonic","Rocket","Blaze","Titan","Razor","Eagle","Hawk","Viper","Cobra","Ghost","Specter","Nova","Orbit","Laser","Atomic"];
-const LAST  = ["Lightning","Chaser","Rocket","Fury","Rider","Rush","Arrow","Will","Dream","Thunder","Rose","Pin","Speed","Flash","Predator","Strike","Diamond","Charge","Wind","Tide","Fire","Bolt","Runner","Force","Shot","Dash","Star","Trail","Beast","Edge","Claw","Fang","Pulse","Surge","Breeze","Flame","Storm","Shadow","Quest","Blaze"];
-const TRAINERS = ["J. Smith","M. Brown","T. Wilson","S. Davis","P. Johnson","A. Taylor","C. Martin","B. White","R. Lee","H. Clark","N. Hall","D. Adams","L. Baker","K. Nelson","F. Moore","G. Scott","E. Green","W. Hill","V. Young","Z. King"];
-const GRADES   = ["Grade 5","Grade 4","Grade 3","Grade 2","Grade 1","Free For All","Maiden","Restricted Win","Mixed 5/6","Mixed 4/5"];
-
-function rng(seed) { let s=seed; return ()=>{ s=(s*1664525+1013904223)&0xffffffff; return (s>>>0)/0xffffffff; }; }
-function dogName(r) { return FIRST[Math.floor(r()*FIRST.length)]+" "+LAST[Math.floor(r()*LAST.length)]; }
-function formStr(r) { return Array.from({length:5},()=>{ const v=r(); return v<.05?"F":v<.1?"D":String(Math.floor(v*6)+1); }).join("-"); }
-
-function generateMeetings() {
-  const baseHour = new Date(); baseHour.setMinutes(0,0,0);
-  const startMs  = baseHour.getTime() + 60*60000;
-  const meetings=[]; let offset=0;
-  VENUES.forEach((venue,vi)=>{
-    const r=rng(vi*9999+1), numRaces=8+Math.floor(r()*5), races=[];
-    for(let i=0;i<numRaces;i++){
-      const rr=rng(vi*9999+i*777+42), dist=venue.distances[Math.floor(rr()*venue.distances.length)];
-      const grade=GRADES[Math.floor(rr()*GRADES.length)];
-      const startTime=new Date(startMs+(offset*12+i*13+vi*3)*60000).toISOString();
-      const runners=Array.from({length:dist<400?6:8},(_,bi)=>{
-        const br=rng(vi*9999+i*777+bi*333+11);
-        const odds=Math.round((1.5+br()*14)*10)/10;
-        return { number:bi+1, name:dogName(br), trainer:TRAINERS[Math.floor(br()*TRAINERS.length)], form:formStr(br), bestTime:(dist/17.2+(br()-.5)*.8).toFixed(2), odds, placeOdds:Math.round((1+(odds-1)*.38)*100)/100 };
-      });
-      races.push({ id:`${venue.id}-r${i+1}`, raceNumber:i+1, raceName:`Race ${i+1} — ${dist}m`, distance:dist, grade, startTime, status:"Open", runners });
-    }
-    offset+=numRaces+2;
-    meetings.push({...venue,races});
-  });
-  return meetings;
-}
-
-function generateResult(race) {
-  const shuffled=[...race.runners].map(r=>({...r,score:Math.random()*(1/r.odds)+Math.random()*.3})).sort((a,b)=>b.score-a.score);
-  const [win,p1,p2]=shuffled;
-  return { positions:shuffled, placeRunners:[win.number,p1.number,p2.number],
-    dividends:{ win:{runner:win.number,name:win.name,amount:(win.odds*.85).toFixed(2)},
-      place:[{runner:win.number,name:win.name,amount:(win.odds*.30).toFixed(2)},{runner:p1.number,name:p1.name,amount:(p1.odds*.25).toFixed(2)},{runner:p2.number,name:p2.name,amount:(p2.odds*.22).toFixed(2)}],
-      exacta:{runners:`${win.number}/${p1.number}`,amount:(win.odds*p1.odds*.7).toFixed(2)},
-      quinella:{runners:`${Math.min(win.number,p1.number)}/${Math.max(win.number,p1.number)}`,amount:(Math.min(win.odds,p1.odds)*.9).toFixed(2)},
-      trifecta:{runners:`${win.number}/${p1.number}/${p2.number}`,amount:(win.odds*p1.odds*p2.odds*.5).toFixed(2)} }};
-}
-
-function calcBetOutcome(bet, result) {
-  if(!bet||!result) return null;
-  const isWin=result.dividends.win.runner===bet.runnerNumber, isPlace=result.placeRunners.includes(bet.runnerNumber), stake=parseFloat(bet.stake)||0;
-  if(bet.betType==="WIN"){const paid=isWin?+(stake*parseFloat(result.dividends.win.amount)).toFixed(2):0;return{status:isWin?"WIN":"LOST",paid,profit:+(paid-stake).toFixed(2)};}
-  if(bet.betType==="PLACE"){const pd=result.dividends.place.find(p=>p.runner===bet.runnerNumber);const paid=isPlace&&pd?+(stake*parseFloat(pd.amount)).toFixed(2):0;return{status:isPlace?"PLACED":"LOST",paid,profit:+(paid-stake).toFixed(2)};}
-  if(bet.betType==="EACH WAY"){const half=stake/2;const winPaid=isWin?+(half*parseFloat(result.dividends.win.amount)).toFixed(2):0;const pd=result.dividends.place.find(p=>p.runner===bet.runnerNumber);const placePaid=isPlace&&pd?+(half*parseFloat(pd.amount)).toFixed(2):0;const paid=+(winPaid+placePaid).toFixed(2);return{status:isWin?"WIN + PLACE":isPlace?"PLACE ONLY":"LOST",paid,profit:+(paid-stake).toFixed(2),winPaid,placePaid};}
-  return null;
-}
-
-const fmtTime = iso => new Date(iso).toLocaleTimeString("en-AU",{hour:"2-digit",minute:"2-digit"});
-const getMins  = iso => Math.max(0,Math.floor((new Date(iso)-Date.now())/60000));
-
-// State accent colours — muted, editorial
-const STATE_HUE  = { NSW:"#1a6b3a", VIC:"#1a4a8c", QLD:"#8c3a1a", WA:"#6b1a6b", SA:"#1a6b6b", TAS:"#3a1a6b" };
-const STATE_PALE = { NSW:"#e8f4ec", VIC:"#e8eef8", QLD:"#f8ede8", WA:"#f3e8f3", SA:"#e8f3f3", TAS:"#ede8f3" };
-
-// ─── BOX NUMBER CHIP ──────────────────────────────────────────────────────────
-const BOX_COLORS = ["#1a6b3a","#c0392b","#1a4a8c","#f39c12","#6b1a6b","#2c3e50","#c0392b","#1a6b6b"];
-function BoxChip({n,size=20}){
-  return <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:size,height:size,borderRadius:3,background:BOX_COLORS[(n-1)%BOX_COLORS.length],color:"#fff",fontFamily:"'DM Mono',monospace",fontSize:size*.55,fontWeight:700,flexShrink:0}}>{n}</span>;
-}
-
-// ─── BET SELECTOR ─────────────────────────────────────────────────────────────
-function BetSelector({bet,race,onChange}){
-  const types=["WIN","PLACE","EACH WAY"];
-  const runner=race.runners.find(r=>r.number===bet.runnerNumber);
-  const stake=parseFloat(bet.stake)||0;
-  const tCol={WIN:"#b8860b",PLACE:"#1a4a8c","EACH WAY":"#1a6b3a"};
-  const tBg ={WIN:"#fdf8e8",PLACE:"#e8eef8","EACH WAY":"#e8f4ec"};
-
-  return(
-    <div style={{display:"flex",flexDirection:"column",gap:10}}>
-      <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,flexWrap:"wrap"}}>
-        {runner&&(
-          <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-            <BoxChip n={runner.number} size={22}/>
-            <span style={{fontFamily:"'Playfair Display',serif",fontSize:14,fontWeight:700,color:"#1a1a1a"}}>{runner.name}</span>
-            <span style={{padding:"2px 7px",background:"#fdf8e8",border:"1px solid #d4a830",color:"#b8860b",fontSize:10,borderRadius:3,fontFamily:"'DM Mono',monospace"}}>WIN ${runner.odds}</span>
-            <span style={{padding:"2px 7px",background:"#e8eef8",border:"1px solid #6b8cbf",color:"#1a4a8c",fontSize:10,borderRadius:3,fontFamily:"'DM Mono',monospace"}}>PLC ${runner.placeOdds}</span>
-          </div>
-        )}
-        <select value={bet.runnerNumber}
-          onChange={e=>{const n=parseInt(e.target.value);const r=race.runners.find(x=>x.number===n);onChange({...bet,runnerNumber:n,winOdds:r?.odds||0,placeOdds:r?.placeOdds||0});}}
-          style={{padding:"5px 10px",background:"#fff",border:"1px solid #ddd",color:"#333",fontFamily:"'DM Mono',monospace",fontSize:11,borderRadius:4,cursor:"pointer",outline:"none"}}>
-          {race.runners.map(r=><option key={r.number} value={r.number}>Box {r.number} — {r.name}</option>)}
-        </select>
-      </div>
-
-      <div style={{display:"flex",gap:6}}>
-        {types.map(t=>(
-          <button key={t} onClick={()=>onChange({...bet,betType:t})} style={{
-            flex:1,padding:"8px 4px",
-            background:bet.betType===t?tBg[t]:"#f8f8f8",
-            border:`1.5px solid ${bet.betType===t?tCol[t]:"#e0e0e0"}`,
-            color:bet.betType===t?tCol[t]:"#888",
-            fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:bet.betType===t?700:400,
-            cursor:"pointer",borderRadius:4,transition:"all .15s"
-          }}>{t}</button>
-        ))}
-      </div>
-
-      <div style={{display:"flex",alignItems:"center",gap:6}}>
-        <span style={{fontSize:10,color:"#888",letterSpacing:1,whiteSpace:"nowrap",fontFamily:"'DM Mono',monospace"}}>STAKE $</span>
-        <input type="number" min="1" step="1" value={bet.stake}
-          onChange={e=>onChange({...bet,stake:e.target.value})}
-          style={{flex:1,padding:"7px 10px",background:"#fff",border:"1px solid #ddd",color:"#1a1a1a",fontFamily:"'DM Mono',monospace",fontSize:13,borderRadius:4,outline:"none"}}/>
-        {[5,10,20,50].map(v=>(
-          <button key={v} onClick={()=>onChange({...bet,stake:String(v)})} style={{
-            padding:"6px 9px",
-            background:bet.stake===String(v)?"#1a6b3a":"#f4f4f4",
-            border:`1px solid ${bet.stake===String(v)?"#1a6b3a":"#e0e0e0"}`,
-            color:bet.stake===String(v)?"#fff":"#666",
-            fontFamily:"'DM Mono',monospace",fontSize:10,cursor:"pointer",borderRadius:4,transition:"all .15s"
-          }}>{v}</button>
-        ))}
-      </div>
-
-      {stake>0&&runner&&(
-        <div style={{display:"flex",gap:8}}>
-          {(bet.betType==="WIN"||bet.betType==="EACH WAY")&&(
-            <div style={{flex:1,padding:"9px 12px",background:"#fdf8e8",border:"1px solid #e8c84a",borderRadius:4}}>
-              <div style={{fontSize:9,color:"#b8860b",letterSpacing:1,marginBottom:2,fontFamily:"'DM Mono',monospace"}}>WIN RETURN</div>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#b8860b"}}>${(stake*(bet.betType==="EACH WAY"?.5:1)*runner.odds).toFixed(2)}</div>
-            </div>
-          )}
-          {(bet.betType==="PLACE"||bet.betType==="EACH WAY")&&(
-            <div style={{flex:1,padding:"9px 12px",background:"#e8eef8",border:"1px solid #6b8cbf",borderRadius:4}}>
-              <div style={{fontSize:9,color:"#1a4a8c",letterSpacing:1,marginBottom:2,fontFamily:"'DM Mono',monospace"}}>PLACE RETURN</div>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#1a4a8c"}}>${(stake*(bet.betType==="EACH WAY"?.5:1)*runner.placeOdds).toFixed(2)}</div>
-            </div>
-          )}
-          {bet.betType==="EACH WAY"&&(
-            <div style={{flex:1,padding:"9px 12px",background:"#e8f4ec",border:"1px solid #6bbf8c",borderRadius:4}}>
-              <div style={{fontSize:9,color:"#1a6b3a",letterSpacing:1,marginBottom:2,fontFamily:"'DM Mono',monospace"}}>TOTAL STAKE</div>
-              <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#1a6b3a"}}>${stake.toFixed(2)}</div>
-            </div>
-          )}
-        </div>
-      )}
+<div class="main" id="upcoming-tab">
+  <div class="sidebar">
+    <div class="sidebar-title">Meetings</div>
+    <div class="state-filters" id="state-filters"></div>
+    <div id="meeting-list"></div>
+  </div>
+  <div class="panel" id="main-panel">
+    <div class="placeholder">
+      <div style="font-size:24px;color:#ccc;margin-bottom:8px">Select a Meeting</div>
+      <div>Choose a venue from the sidebar to view the race card</div>
     </div>
-  );
+  </div>
+</div>
+
+<div id="results-tab" style="display:none;max-width:1100px;margin:0 auto;padding:20px 24px">
+  <div class="placeholder" style="color:#aaa">No results yet — simulate a race result first</div>
+</div>
+
+<script type="module">
+const BOX_COLORS = ['#1a6b3a','#c0392b','#1a4a8c','#f39c12','#6b1a6b','#2c3e50','#c0392b','#1a6b6b'];
+const STATE_HUE = {NSW:'#1a6b3a',VIC:'#1a4a8c',QLD:'#8c3a1a',WA:'#6b1a6b',SA:'#1a6b6b',TAS:'#3a1a6b'};
+
+let meetings = [];
+let selState = 'ALL';
+let selMeeting = null;
+let selRace = null;
+let picks = {};
+
+function boxChip(n, size=22) {
+  return `<span class="box-chip" style="width:${size}px;height:${size}px;background:${BOX_COLORS[(n-1)%BOX_COLORS.length]};font-size:${size*.5}px">${n}</span>`;
 }
 
-// ─── MAIN APP ─────────────────────────────────────────────────────────────────
-const ALL_MEETINGS = generateMeetings();
+function fmtTime(iso) {
+  return new Date(iso).toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'});
+}
 
-function GreyhoundTipster(){
-  const [meetings, setMeetings]              = useState(ALL_MEETINGS);
-  const [isLive, setIsLive]                  = useState(false);
-  const [picks,         setPicks]            = useState({});
-  const [bets,          setBets]             = useState({});
-  const [results,       setResults]          = useState({});
-  const [loadingPick,   setLoadingPick]      = useState({});
-  const [loadingResult, setLoadingResult]    = useState({});
-  const [activeTab,     setActiveTab]        = useState("upcoming");
-  const [selState,      setSelState]         = useState("ALL");
-  const [selMeeting,    setSelMeeting]       = useState(null);
-  const [selRace,       setSelRace]          = useState(null);
-  const [,              tick]                = useState(0);
+function getMins(iso) {
+  return Math.max(0, Math.floor((new Date(iso) - Date.now()) / 60000));
+}
 
-  useEffect(()=>{ const t=setInterval(()=>tick(n=>n+1),30000); return()=>clearInterval(t); },[]);
+window.showTab = function(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='upcoming')||(i===1&&tab==='results')));
+  document.getElementById('upcoming-tab').style.display = tab==='upcoming' ? 'flex' : 'none';
+  document.getElementById('results-tab').style.display = tab==='results' ? 'block' : 'none';
+};
 
-  useEffect(()=>{
-    function applyLiveData(d) {
-      if(d && d.meetings && d.meetings.length > 0) {
-        setMeetings(d.meetings);
-        setIsLive(true);
-        console.log('Applied live data:', d.meetings.length, 'meetings');
-      }
-    }
-    if(window.__liveData) {
-      applyLiveData(window.__liveData);
-    } else {
-      document.addEventListener('livedataready', function() {
-        applyLiveData(window.__liveData);
-      });
-    }
-  },[]);
+window.selectState = function(s) {
+  selState = s;
+  selMeeting = null;
+  selRace = null;
+  renderSidebar();
+  renderMain();
+};
 
-  const allRaces       = meetings.flatMap(m=>m.races.map(r=>({...r,meeting:m.name,state:m.state,venueId:m.id})));
-  const completedIds   = new Set(Object.keys(results));
-  const upcomingRaces  = allRaces.filter(r=>!completedIds.has(r.id));
-  const completedRaces = allRaces.filter(r=> completedIds.has(r.id));
-  const nextRace       = [...upcomingRaces].sort((a,b)=>new Date(a.startTime)-new Date(b.startTime))[0];
-  const states         = ["ALL",...Array.from(new Set(meetings.map(m=>m.state))).sort()];
-  const filteredMtgs   = selState==="ALL" ? meetings : meetings.filter(m=>m.state===selState);
+window.selectMeeting = function(id) {
+  selMeeting = id;
+  selRace = null;
+  renderSidebar();
+  renderMain();
+};
 
-  const getAIPick = async(race)=>{
-    const key=race.id; setLoadingPick(p=>({...p,[key]:true}));
-    try{
-      const prompt=`You are an expert greyhound racing analyst. Analyze these runners for ${race.raceName} at ${race.meeting} (${race.distance}m, ${race.grade}).
+window.selectRace = function(id) {
+  selRace = id;
+  renderMain();
+};
+
+window.getAIPick = async function(raceId) {
+  const m = meetings.find(x => x.races.some(r => r.id === raceId));
+  const race = m && m.races.find(r => r.id === raceId);
+  if (!race) return;
+
+  document.getElementById('ai-area-' + raceId).innerHTML = '<div class="loading">Analysing form data...</div>';
+
+  const prompt = `You are an expert greyhound racing analyst. Analyze these runners for ${race.raceName} at ${m.name} (${race.distance}m, ${race.grade}).
 
 Runners:
-${race.runners.map(r=>`Box ${r.number}: ${r.name} | Trainer: ${r.trainer} | Form: ${r.form} | Best: ${r.bestTime}s | Win: $${r.odds} Plc: $${r.placeOdds}`).join('\n')}
+${race.runners.map(r => `Box ${r.number}: ${r.name} | Trainer: ${r.trainer} | Best: ${r.bestTime}s | Win: $${r.odds} Plc: $${r.placeOdds}`).join('\n')}
 
 Respond ONLY with valid JSON, no markdown:
 {"winner":{"number":1,"name":"Name","confidence":"High"},"top3":[{"number":1,"name":"Name","reason":"brief"},{"number":2,"name":"Name","reason":"brief"},{"number":3,"name":"Name","reason":"brief"}],"analysis":"2 sentences.","bestBet":"Win","value":"brief"}`;
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:600,messages:[{role:"user",content:prompt}]})});
-      const data=await res.json();
-      const pick=JSON.parse(data.content[0].text.replace(/```json|```/g,"").trim());
-      setPicks(p=>({...p,[key]:pick}));
-      const wr=race.runners.find(r=>r.number===pick.winner.number);
-      const t=pick.bestBet?.toLowerCase().includes("each")?"EACH WAY":pick.bestBet?.toLowerCase().includes("place")?"PLACE":"WIN";
-      setBets(b=>({...b,[key]:{runnerNumber:pick.winner.number,betType:t,stake:"10",winOdds:wr?.odds||0,placeOdds:wr?.placeOdds||0}}));
-    }catch{
-      const fb=race.runners.reduce((a,b)=>b.odds<a.odds?b:a);
-      setPicks(p=>({...p,[key]:{winner:{number:fb.number,name:fb.name,confidence:"Medium"},top3:[...race.runners].sort((a,b)=>a.odds-b.odds).slice(0,3).map((r,i)=>({number:r.number,name:r.name,reason:i===0?"Market favourite":"Each-way chance"})),analysis:"Based on market pricing and form figures.",bestBet:"Win",value:"Watch late market moves."}}));
-      setBets(b=>({...b,[key]:{runnerNumber:fb.number,betType:"WIN",stake:"10",winOdds:fb.odds,placeOdds:fb.placeOdds}}));
-    }
-    setLoadingPick(p=>({...p,[key]:false}));
-  };
 
-  const simulateResult=(race)=>{
-    setLoadingResult(p=>({...p,[race.id]:true}));
-    setTimeout(()=>{ setResults(r=>({...r,[race.id]:generateResult(race)})); setLoadingResult(p=>({...p,[race.id]:false})); },1500);
-  };
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:600, messages:[{role:'user',content:prompt}]})
+    });
+    const data = await res.json();
+    picks[raceId] = JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+  } catch(e) {
+    const fb = race.runners.reduce((a,b) => b.odds < a.odds ? b : a);
+    picks[raceId] = {winner:{number:fb.number,name:fb.name,confidence:'Medium'},top3:[],analysis:'Based on market pricing and form figures.',bestBet:'Win',value:'Market favourite.'};
+  }
+  renderMain();
+};
 
-  const ledger=completedRaces.reduce((acc,race)=>{
-    const outcome=calcBetOutcome(bets[race.id],results[race.id]);
-    if(!outcome) return acc;
-    acc.staked+=parseFloat(bets[race.id].stake)||0; acc.returns+=outcome.paid; acc.profit+=outcome.profit; acc.count++; if(outcome.status!=="LOST") acc.winners++;
-    return acc;
-  },{staked:0,returns:0,profit:0,count:0,winners:0});
+function renderSidebar() {
+  const states = ['ALL', ...Array.from(new Set(meetings.map(m => m.state))).sort()];
+  document.getElementById('state-filters').innerHTML = states.map(s =>
+    `<button class="state-btn ${selState===s?'active':''}" onclick="selectState('${s}')" style="${selState===s?'background:'+( STATE_HUE[s]||'#1a6b3a')+';border-color:'+(STATE_HUE[s]||'#1a6b3a')+';color:#fff':''}">${s}</button>`
+  ).join('');
 
-  // ── STYLES ────────────────────────────────────────────────────────────────
-  const S = {
-    page:    { minHeight:"100vh", background:"#f5f2ed", fontFamily:"'DM Sans',sans-serif", color:"#1a1a1a" },
-    header:  { background:"#1a1a1a", color:"#fff", padding:"0 24px" },
-    card:    { background:"#fff", border:"1px solid #e8e4de", borderRadius:6, overflow:"hidden", marginBottom:8, boxShadow:"0 1px 3px rgba(0,0,0,.06)" },
-    section: { fontSize:9, fontWeight:700, letterSpacing:2.5, color:"#888", textTransform:"uppercase", fontFamily:"'DM Mono',monospace", marginBottom:8 },
-    label:   { fontSize:9, fontWeight:600, letterSpacing:1.5, color:"#999", textTransform:"uppercase", fontFamily:"'DM Mono',monospace" },
-    pill:    (bg,text,border)=>({ padding:"2px 8px", background:bg, border:`1px solid ${border}`, color:text, fontSize:10, borderRadius:3, fontFamily:"'DM Mono',monospace", fontWeight:600 }),
-  };
-
-  return(
-    <div style={S.page}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;600&display=swap');
-        @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-        @keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
-        .fade-up{animation:fadeUp .3s ease forwards}
-        .rrow:hover{background:#f8f6f2!important}
-        input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
-        button,select{font-family:inherit;cursor:pointer}
-        button:active{transform:scale(.98)}
-        ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#f0ece6}::-webkit-scrollbar-thumb{background:#c8c0b4;border-radius:4px}
-        a{color:inherit}
-      `}</style>
-
-      {/* ── MASTHEAD ── */}
-      <div style={S.header}>
-        <div style={{maxWidth:1100,margin:"0 auto",display:"flex",alignItems:"stretch",gap:0}}>
-          <div style={{padding:"18px 24px 18px 0",borderRight:"1px solid #333",marginRight:24}}>
-            <div style={{fontSize:9,letterSpacing:3,color:"#888",marginBottom:4,fontFamily:"'DM Mono',monospace"}}>ESTABLISHED 2024</div>
-            <div style={{fontFamily:"'Playfair Display',serif",fontSize:"clamp(28px,5vw,44px)",fontWeight:900,lineHeight:1,letterSpacing:-1}}>
-              GREYHOUND<br/><span style={{color:"#c8a84a"}}>ORACLE</span>
-            </div>
-          </div>
-          <div style={{display:"flex",flexDirection:"column",justifyContent:"center",gap:4,padding:"0 0 0 0"}}>
-            <div style={{fontSize:10,color:"#666",fontFamily:"'DM Mono',monospace"}}>{meetings.length} MEETINGS · {allRaces.length} RACES · AUSTRALIA{isLive&&<span style={{color:"#4caf76",marginLeft:8}}>● LIVE</span>}</div>
-            {nextRace&&(
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                <span style={{width:6,height:6,borderRadius:"50%",background:"#4caf76",display:"inline-block",animation:"shimmer 1.5s infinite"}}/>
-                <span style={{fontSize:11,color:"#aaa"}}>Next:</span>
-                <span style={{fontSize:11,color:"#fff",fontWeight:600}}>{nextRace.meeting} R{nextRace.raceNumber}</span>
-                <span style={{fontSize:10,color:"#c8a84a",fontFamily:"'DM Mono',monospace"}}>{getMins(nextRace.startTime)}m · {fmtTime(nextRace.startTime)}</span>
-              </div>
-            )}
-          </div>
-          <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:8,padding:"18px 0"}}>
-            {completedRaces.length>0&&[
-              {l:"Staked",v:`$${ledger.staked.toFixed(0)}`,c:"#aaa"},
-              {l:"Returns",v:`$${ledger.returns.toFixed(0)}`,c:"#6b9fd4"},
-              {l:"P/L",v:`${ledger.profit>=0?"+":""}$${ledger.profit.toFixed(0)}`,c:ledger.profit>=0?"#4caf76":"#e05a4e"},
-              {l:"Strike",v:`${ledger.count?Math.round(ledger.winners/ledger.count*100):0}%`,c:"#c8a84a"},
-            ].map(s=>(
-              <div key={s.l} style={{textAlign:"center",padding:"6px 12px",borderLeft:"1px solid #333"}}>
-                <div style={{fontSize:8,color:"#666",letterSpacing:1.5,fontFamily:"'DM Mono',monospace"}}>{s.l.toUpperCase()}</div>
-                <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:s.c,lineHeight:1.2}}>{s.v}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── NAV TABS ── */}
-      <div style={{background:"#fff",borderBottom:"2px solid #e8e4de",position:"sticky",top:0,zIndex:10}}>
-        <div style={{maxWidth:1100,margin:"0 auto",display:"flex",padding:"0 24px",gap:0}}>
-          {[["upcoming",`Upcoming (${upcomingRaces.length})`],["results",`Results (${completedRaces.length})`]].map(([key,label])=>(
-            <button key={key} onClick={()=>setActiveTab(key)} style={{
-              padding:"12px 20px",background:"transparent",border:"none",
-              borderBottom:`3px solid ${activeTab===key?"#1a6b3a":"transparent"}`,
-              color:activeTab===key?"#1a6b3a":"#888",
-              fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:activeTab===key?700:400,
-              transition:"all .2s",marginBottom:-2
-            }}>{label}</button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{maxWidth:1100,margin:"0 auto",padding:"20px 24px"}}>
-
-        {/* ══ UPCOMING ══ */}
-        {activeTab==="upcoming"&&(
-          <div style={{display:"flex",gap:16}}>
-
-            {/* SIDEBAR */}
-            <div style={{width:200,flexShrink:0}}>
-              <div style={S.section}>Meetings</div>
-              {/* State filter */}
-              <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:12}}>
-                {states.map(s=>{
-                  const active=selState===s;
-                  const hue=STATE_HUE[s]||"#1a6b3a"; const pale=STATE_PALE[s]||"#e8f4ec";
-                  return(
-                    <button key={s} onClick={()=>setSelState(s)} style={{
-                      padding:"3px 8px",background:active?hue:"#f4f4f4",
-                      border:`1px solid ${active?hue:"#ddd"}`,color:active?"#fff":"#777",
-                      fontFamily:"'DM Mono',monospace",fontSize:9,fontWeight:600,
-                      borderRadius:3,transition:"all .15s"
-                    }}>{s}</button>
-                  );
-                })}
-              </div>
-
-              <div style={{display:"flex",flexDirection:"column",gap:4}}>
-                {filteredMtgs.map(meeting=>{
-                  const sel=selMeeting===meeting.id;
-                  const hue=STATE_HUE[meeting.state]||"#1a6b3a"; const pale=STATE_PALE[meeting.state]||"#e8f4ec";
-                  const done=meeting.races.filter(r=>completedIds.has(r.id)).length;
-                  return(
-                    <button key={meeting.id} onClick={()=>{setSelMeeting(sel?null:meeting.id);setSelRace(null);}} style={{
-                      padding:"9px 10px",textAlign:"left",
-                      background:sel?pale:"#fff",
-                      border:`1px solid ${sel?hue:"#e8e4de"}`,
-                      borderLeft:`3px solid ${hue}`,
-                      borderRadius:4,transition:"all .15s"
-                    }}>
-                      <div style={{fontSize:12,fontWeight:sel?700:500,color:sel?hue:"#333",lineHeight:1.3}}>{meeting.name}</div>
-                      <div style={{display:"flex",justifyContent:"space-between",marginTop:3}}>
-                        <span style={{fontSize:9,color:hue,fontFamily:"'DM Mono',monospace",fontWeight:600}}>{meeting.state}</span>
-                        <span style={{fontSize:9,color:"#aaa",fontFamily:"'DM Mono',monospace"}}>{done}/{meeting.races.length}</span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* MAIN PANEL */}
-            <div style={{flex:1,minWidth:0}}>
-              {!selMeeting&&(
-                <div style={{textAlign:"center",padding:"80px 20px"}}>
-                  <div style={{fontFamily:"'Playfair Display',serif",fontSize:24,color:"#ccc",marginBottom:8}}>Select a Meeting</div>
-                  <div style={{fontSize:13,color:"#aaa"}}>Choose a venue from the sidebar to view the race card</div>
-                </div>
-              )}
-
-              {selMeeting&&(()=>{
-                const meeting=meetings.find(m=>m.id===selMeeting); if(!meeting) return null;
-                const hue=STATE_HUE[meeting.state]||"#1a6b3a"; const pale=STATE_PALE[meeting.state]||"#e8f4ec";
-
-                return(
-                  <div>
-                    {/* Meeting header */}
-                    <div style={{background:hue,color:"#fff",padding:"14px 20px",borderRadius:6,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                      <div>
-                        <div style={{fontSize:9,letterSpacing:3,opacity:.7,marginBottom:4,fontFamily:"'DM Mono',monospace"}}>{meeting.state} · {meeting.races.length} RACES</div>
-                        <div style={{fontFamily:"'Playfair Display',serif",fontSize:24,fontWeight:900,letterSpacing:-.5}}>{meeting.name}</div>
-                      </div>
-                      <div style={{textAlign:"right"}}>
-                        <div style={{fontSize:9,opacity:.6,letterSpacing:1,fontFamily:"'DM Mono',monospace",marginBottom:2}}>DISTANCES</div>
-                        <div style={{fontSize:12,fontFamily:"'DM Mono',monospace"}}>{[...new Set(meeting.races.map(r=>r.distance))].sort((a,b)=>a-b).join(" · ")}m</div>
-                      </div>
-                    </div>
-
-                    {/* Race list */}
-                    {!selRace&&(
-                      <div style={{display:"flex",flexDirection:"column",gap:6}}>
-                        {meeting.races.map((race,i)=>{
-                          const mins=getMins(race.startTime), pick=picks[race.id], isComp=completedIds.has(race.id), result=results[race.id], bet=bets[race.id];
-                          const outcome=calcBetOutcome(bet,result);
-                          const urgency=mins<5?"#c0392b":mins<15?"#e67e22":"#1a6b3a";
-                          const outcomeC=!outcome?"#aaa":outcome.status==="LOST"?"#c0392b":outcome.status.includes("WIN")?"#b8860b":"#1a4a8c";
-
-                          return(
-                            <button key={race.id} className="fade-up" onClick={()=>setSelRace(race.id)} style={{
-                              display:"flex",alignItems:"center",gap:12,padding:"11px 16px",
-                              background:"#fff",border:"1px solid #e8e4de",
-                              borderLeft:`3px solid ${isComp?(outcome?.status==="LOST"?"#c0392b":outcome?"#1a6b3a":"#aaa"):urgency}`,
-                              borderRadius:5,textAlign:"left",transition:"all .15s",animationDelay:`${i*.025}s`,
-                              boxShadow:"0 1px 3px rgba(0,0,0,.04)"
-                            }}>
-                              <div style={{width:32,textAlign:"center"}}>
-                                <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:hue,lineHeight:1}}>R{race.raceNumber}</div>
-                              </div>
-                              <div style={{flex:1,minWidth:0}}>
-                                <div style={{fontSize:12,fontWeight:500,color:"#1a1a1a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{race.raceName}</div>
-                                <div style={{fontSize:10,color:"#aaa",marginTop:2,fontFamily:"'DM Mono',monospace"}}>{fmtTime(race.startTime)} · {race.grade} · {race.runners.length} runners</div>
-                              </div>
-                              {pick&&!isComp&&(
-                                <div style={{textAlign:"right",flexShrink:0}}>
-                                  <div style={{fontSize:9,color:"#aaa",fontFamily:"'DM Mono',monospace"}}>TIP</div>
-                                  <div style={{fontSize:12,fontWeight:700,color:"#1a6b3a",display:"flex",alignItems:"center",gap:4}}><BoxChip n={pick.winner.number} size={16}/> Bx{pick.winner.number}</div>
-                                </div>
-                              )}
-                              {isComp&&result&&(
-                                <div style={{textAlign:"right",flexShrink:0}}>
-                                  <div style={{fontSize:9,color:"#aaa",fontFamily:"'DM Mono',monospace"}}>RESULT</div>
-                                  <div style={{fontSize:11,fontWeight:700,color:outcomeC}}>{outcome?.status||"BOX "+result.dividends.win.runner}</div>
-                                </div>
-                              )}
-                              {!isComp&&(
-                                <div style={{textAlign:"right",flexShrink:0}}>
-                                  <div style={{fontSize:9,color:"#aaa",fontFamily:"'DM Mono',monospace"}}>STARTS</div>
-                                  <div style={{fontFamily:"'Playfair Display',serif",fontSize:17,fontWeight:700,color:urgency,lineHeight:1}}>{mins}m</div>
-                                </div>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {/* Race detail */}
-                    {selRace&&(()=>{
-                      const race=meeting.races.find(r=>r.id===selRace); if(!race) return null;
-                      const pick=picks[race.id], bet=bets[race.id], isComp=completedIds.has(race.id), result=results[race.id];
-                      const outcome=calcBetOutcome(bet,result);
-                      const mins=getMins(race.startTime), isLdP=loadingPick[race.id], isLdR=loadingResult[race.id];
-                      const urgency=mins<5?"#c0392b":mins<15?"#e67e22":"#1a6b3a";
-
-                      return(
-                        <div>
-                          {/* Top nav */}
-                          <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12,gap:8}}>
-                            <button onClick={()=>setSelRace(null)} style={{padding:"6px 14px",background:"#fff",border:"1px solid #ddd",color:"#666",borderRadius:4,fontSize:12,fontWeight:500,transition:"all .15s"}}>← Back</button>
-                            <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
-                              {meeting.races.map(r=>{
-                                const isR=r.id===selRace, isC=completedIds.has(r.id);
-                                return(
-                                  <button key={r.id} onClick={()=>setSelRace(r.id)} style={{
-                                    width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",
-                                    background:isR?hue:isC?"#fce8e8":"#f4f4f4",
-                                    border:`1px solid ${isR?hue:isC?"#f0c0c0":"#ddd"}`,
-                                    color:isR?"#fff":isC?"#c0392b":"#888",
-                                    fontFamily:"'DM Mono',monospace",fontSize:10,fontWeight:700,borderRadius:4,transition:"all .15s"
-                                  }}>R{r.raceNumber}</button>
-                                );
-                              })}
-                            </div>
-                          </div>
-
-                          {/* Race banner */}
-                          <div style={{...S.card,border:`1px solid ${hue}30`,marginBottom:12}}>
-                            <div style={{background:pale,borderBottom:`1px solid ${hue}20`,padding:"14px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                              <div>
-                                <div style={{fontSize:9,color:hue,letterSpacing:2.5,fontWeight:700,fontFamily:"'DM Mono',monospace",marginBottom:4}}>{meeting.name.toUpperCase()} · {race.distance}M · {race.grade.toUpperCase()}</div>
-                                <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:"#1a1a1a"}}>{race.raceName}</div>
-                              </div>
-                              {!isComp?(
-                                <div style={{textAlign:"right"}}>
-                                  <div style={{fontSize:9,color:"#aaa",fontFamily:"'DM Mono',monospace",letterSpacing:1}}>STARTS IN</div>
-                                  <div style={{fontFamily:"'Playfair Display',serif",fontSize:28,fontWeight:900,color:urgency,lineHeight:1}}>{mins}m</div>
-                                  <div style={{fontSize:10,color:"#888",fontFamily:"'DM Mono',monospace"}}>{fmtTime(race.startTime)}</div>
-                                </div>
-                              ):(
-                                <span style={{...S.pill("#fce8e8","#c0392b","#f0c0c0")}}>COMPLETED</span>
-                              )}
-                            </div>
-
-                            {/* Runners table */}
-                            <div style={{overflowX:"auto"}}>
-                              <table style={{width:"100%",borderCollapse:"collapse",minWidth:480}}>
-                                <thead>
-                                  <tr style={{borderBottom:"2px solid #f0ece6"}}>
-                                    {["Box","Dog","Trainer","Form","Best","Win","Place"].map(h=>(
-                                      <th key={h} style={{padding:"8px 12px",fontSize:9,letterSpacing:1.5,color:"#999",textAlign:"left",fontWeight:700,fontFamily:"'DM Mono',monospace",textTransform:"uppercase",whiteSpace:"nowrap"}}>{h}</th>
-                                    ))}
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {race.runners.map((runner,ri)=>{
-                                    const isPicked=pick?.winner?.number===runner.number, isTop3=pick?.top3?.some(t=>t.number===runner.number), isBet=bet?.runnerNumber===runner.number;
-                                    const pos=isComp&&result?result.positions.findIndex(p=>p.number===runner.number):-1;
-                                    const rowBg=pos===0?"#fffdf0":pos===1?"#f8f8f8":pos===2?"#fdf5f0":isPicked?"#f0f9f4":isTop3?"#f8fcfa":"#fff";
-                                    return(
-                                      <tr key={runner.number} className="rrow" style={{borderBottom:"1px solid #f5f2ed",background:rowBg,transition:"background .15s"}}>
-                                        <td style={{padding:"9px 12px"}}>
-                                          <div style={{display:"flex",alignItems:"center",gap:6}}>
-                                            <BoxChip n={runner.number} size={22}/>
-                                            {isPicked&&<span style={{fontSize:10,color:"#1a6b3a"}}>★</span>}
-                                            {pos>=0&&pos<=2&&<span style={{fontSize:10,color:pos===0?"#b8860b":pos===1?"#888":"#cd7f32",fontWeight:700}}>#{pos+1}</span>}
-                                          </div>
-                                        </td>
-                                        <td style={{padding:"9px 12px",fontSize:12,fontWeight:isBet?700:isPicked?600:400,color:"#1a1a1a",whiteSpace:"nowrap"}}>{runner.name}</td>
-                                        <td style={{padding:"9px 12px",fontSize:11,color:"#888",whiteSpace:"nowrap"}}>{runner.trainer}</td>
-                                        <td style={{padding:"9px 12px",fontSize:11,fontFamily:"'DM Mono',monospace",color:"#666",letterSpacing:.5}}>{runner.form}</td>
-                                        <td style={{padding:"9px 12px",fontSize:11,fontFamily:"'DM Mono',monospace",color:"#1a6b3a",fontWeight:600}}>{runner.bestTime}s</td>
-                                        <td style={{padding:"9px 12px",fontSize:12,fontFamily:"'DM Mono',monospace",fontWeight:700,color:"#b8860b"}}>${runner.odds}</td>
-                                        <td style={{padding:"9px 12px",fontSize:12,fontFamily:"'DM Mono',monospace",fontWeight:600,color:"#1a4a8c"}}>${runner.placeOdds}</td>
-                                      </tr>
-                                    );
-                                  })}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-
-                          {/* AI + Bet */}
-                          {!isComp&&(
-                            <div>
-                              {!pick&&!isLdP&&(
-                                <button onClick={()=>getAIPick(race)} style={{
-                                  width:"100%",padding:"13px",background:"#1a6b3a",border:"none",color:"#fff",
-                                  fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,borderRadius:5,transition:"all .2s",
-                                  boxShadow:"0 2px 8px rgba(26,107,58,.3)",marginBottom:12
-                                }}>Get AI Selections →</button>
-                              )}
-                              {isLdP&&(
-                                <div style={{textAlign:"center",padding:"16px",background:"#fff",border:"1px solid #e8e4de",borderRadius:5,marginBottom:12,color:"#888",fontSize:12}}>
-                                  <div style={{display:"inline-block",width:14,height:14,border:"2px solid #1a6b3a",borderTopColor:"transparent",borderRadius:"50%",animation:"spin .8s linear infinite",marginRight:8,verticalAlign:"middle"}}/>
-                                  Analysing form data…
-                                </div>
-                              )}
-
-                              {pick&&(
-                                <div className="fade-up">
-                                  {/* Winner + Suggests row */}
-                                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
-                                    <div style={{...S.card,padding:14,borderLeft:"3px solid #1a6b3a"}}>
-                                      <div style={S.section}>AI Selection</div>
-                                      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
-                                        <BoxChip n={pick.winner.number} size={28}/>
-                                        <div style={{fontFamily:"'Playfair Display',serif",fontSize:17,fontWeight:700,color:"#1a1a1a",lineHeight:1.2}}>{pick.winner.name}</div>
-                                      </div>
-                                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                                        <span style={{fontSize:10,color:"#888"}}>
-                                          Confidence: <b style={{color:pick.winner.confidence==="High"?"#1a6b3a":pick.winner.confidence==="Medium"?"#e67e22":"#c0392b"}}>{pick.winner.confidence}</b>
-                                        </span>
-                                        <div style={{display:"flex",gap:8}}>
-                                          <div style={{textAlign:"center"}}>
-                                            <div style={S.label}>Win</div>
-                                            <div style={{fontFamily:"'Playfair Display',serif",fontSize:16,fontWeight:700,color:"#b8860b"}}>${race.runners.find(r=>r.number===pick.winner.number)?.odds}</div>
-                                          </div>
-                                          <div style={{textAlign:"center"}}>
-                                            <div style={S.label}>Place</div>
-                                            <div style={{fontFamily:"'Playfair Display',serif",fontSize:16,fontWeight:700,color:"#1a4a8c"}}>${race.runners.find(r=>r.number===pick.winner.number)?.placeOdds}</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div style={{...S.card,padding:14,borderLeft:"3px solid #b8860b"}}>
-                                      <div style={S.section}>AI Suggests</div>
-                                      <div style={{fontFamily:"'Playfair Display',serif",fontSize:20,fontWeight:700,color:"#b8860b",marginBottom:4}}>{pick.bestBet}</div>
-                                      <div style={{fontSize:11,color:"#888",lineHeight:1.4}}>{pick.value}</div>
-                                    </div>
-                                  </div>
-
-                                  {/* Top 3 */}
-                                  <div style={{...S.card,padding:14,marginBottom:10}}>
-                                    <div style={S.section}>Top 3 Selections</div>
-                                    <div style={{display:"flex",gap:8}}>
-                                      {pick.top3?.map((sel,i)=>{
-                                        const r=race.runners.find(x=>x.number===sel.number);
-                                        const medal=["🥇","🥈","🥉"][i];
-                                        return(
-                                          <div key={i} style={{flex:1,padding:"10px 12px",background:i===0?"#fffdf0":i===1?"#f8f8f8":"#fdf5f0",border:`1px solid ${i===0?"#e8c84a":i===1?"#ddd":"#e8c0a0"}`,borderRadius:4}}>
-                                            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                                              <span style={{fontSize:14}}>{medal}</span>
-                                              <div style={{display:"flex",gap:6}}>
-                                                <div style={{textAlign:"center"}}>
-                                                  <div style={{...S.label,fontSize:8}}>Win</div>
-                                                  <div style={{fontSize:12,fontWeight:700,color:"#b8860b",fontFamily:"'DM Mono',monospace"}}>${r?.odds}</div>
-                                                </div>
-                                                <div style={{textAlign:"center"}}>
-                                                  <div style={{...S.label,fontSize:8}}>Plc</div>
-                                                  <div style={{fontSize:12,fontWeight:700,color:"#1a4a8c",fontFamily:"'DM Mono',monospace"}}>${r?.placeOdds}</div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                            <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
-                                              <BoxChip n={sel.number} size={18}/>
-                                              <span style={{fontSize:12,fontWeight:600,color:"#1a1a1a"}}>{sel.name}</span>
-                                            </div>
-                                            <div style={{fontSize:10,color:"#888",lineHeight:1.3}}>{sel.reason}</div>
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-
-                                  {/* Analysis */}
-                                  <div style={{...S.card,padding:14,marginBottom:10,borderLeft:"3px solid #ddd"}}>
-                                    <div style={S.section}>Race Analysis</div>
-                                    <p style={{fontSize:12,color:"#555",margin:0,lineHeight:1.6}}>{pick.analysis}</p>
-                                  </div>
-
-                                  {/* Bet selector */}
-                                  {bet&&(
-                                    <div style={{...S.card,padding:14,marginBottom:10}}>
-                                      <div style={S.section}>Your Bet</div>
-                                      <BetSelector bet={bet} race={race} onChange={u=>setBets(b=>({...b,[race.id]:u}))}/>
-                                    </div>
-                                  )}
-
-                                  {/* Simulate */}
-                                  <button onClick={()=>simulateResult(race)} disabled={isLdR} style={{
-                                    width:"100%",padding:"12px",background:isLdR?"#f4f4f4":"#1a1a1a",border:"none",color:isLdR?"#aaa":"#fff",
-                                    fontFamily:"'DM Sans',sans-serif",fontSize:13,fontWeight:700,borderRadius:5,transition:"all .2s",
-                                    boxShadow:isLdR?"none":"0 2px 8px rgba(0,0,0,.2)"
-                                  }}>
-                                    {isLdR?"Running race…":"▶ Simulate Race Result"}
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Result display */}
-                          {isComp&&result&&(
-                            <div className="fade-up">
-                              {/* Finishing order */}
-                              <div style={{...S.card,padding:14,marginBottom:10}}>
-                                <div style={S.section}>Finishing Order</div>
-                                {result.positions.slice(0,4).map((dog,pos)=>{
-                                  const isBet=dog.number===bet?.runnerNumber;
-                                  return(
-                                    <div key={dog.number} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",marginBottom:4,borderRadius:4,
-                                      background:pos===0?"#fffdf0":pos===1?"#f8f8f8":pos===2?"#fdf5f0":"#fafafa",
-                                      border:`1px solid ${isBet?"#e8c84a":"transparent"}`}}>
-                                      <div style={{width:20,fontSize:13,fontWeight:700,color:pos===0?"#b8860b":pos===1?"#888":pos===2?"#cd7f32":"#ccc",textAlign:"center"}}>{pos+1}</div>
-                                      <BoxChip n={dog.number} size={22}/>
-                                      <div style={{flex:1,fontSize:12,fontWeight:isBet?700:500,color:"#1a1a1a"}}>{dog.name}
-                                        {isBet&&<span style={{fontSize:9,color:"#b8860b",marginLeft:8,fontFamily:"'DM Mono',monospace",fontWeight:700}}>◀ YOUR TIP</span>}
-                                      </div>
-                                      <div style={{display:"flex",gap:10}}>
-                                        <div style={{textAlign:"right"}}>
-                                          <div style={{...S.label,fontSize:8}}>Win</div>
-                                          <div style={{fontSize:11,fontWeight:700,color:"#b8860b",fontFamily:"'DM Mono',monospace"}}>${dog.odds}</div>
-                                        </div>
-                                        <div style={{textAlign:"right"}}>
-                                          <div style={{...S.label,fontSize:8}}>Plc</div>
-                                          <div style={{fontSize:11,fontWeight:700,color:"#1a4a8c",fontFamily:"'DM Mono',monospace"}}>${dog.placeOdds}</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-
-                              {/* Dividends */}
-                              <div style={{...S.card,padding:14,marginBottom:10}}>
-                                <div style={S.section}>Dividends — $1 unit</div>
-                                <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:8}}>
-                                  {[
-                                    {l:"Win",      d:`Box ${result.dividends.win.runner}`,           a:result.dividends.win.amount,           c:"#b8860b",bg:"#fdf8e8",border:"#e8c84a"},
-                                    {l:"Exacta",   d:result.dividends.exacta.runners,                a:result.dividends.exacta.amount,         c:"#1a6b3a",bg:"#e8f4ec",border:"#6bbf8c"},
-                                    {l:"Quinella", d:result.dividends.quinella.runners,              a:result.dividends.quinella.amount,       c:"#1a4a8c",bg:"#e8eef8",border:"#6b8cbf"},
-                                    {l:"Place 1",  d:`Box ${result.dividends.place[0].runner}`,      a:result.dividends.place[0].amount,       c:"#555",bg:"#f8f8f8",border:"#ddd"},
-                                    {l:"Place 2",  d:`Box ${result.dividends.place[1].runner}`,      a:result.dividends.place[1].amount,       c:"#555",bg:"#f8f8f8",border:"#ddd"},
-                                    {l:"Trifecta", d:result.dividends.trifecta.runners,              a:result.dividends.trifecta.amount,       c:"#6b1a6b",bg:"#f3e8f3",border:"#c89bcf"},
-                                  ].map(div=>(
-                                    <div key={div.l} style={{padding:"10px 12px",background:div.bg,border:`1px solid ${div.border}`,borderRadius:4}}>
-                                      <div style={{...S.label,marginBottom:2}}>{div.l}</div>
-                                      <div style={{fontSize:10,color:"#888",marginBottom:2,fontFamily:"'DM Mono',monospace"}}>{div.d}</div>
-                                      <div style={{fontFamily:"'Playfair Display',serif",fontSize:19,fontWeight:700,color:div.c}}>${div.a}</div>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* Bet outcome */}
-                              {outcome&&bet&&(()=>{
-                                const won=outcome.status!=="LOST";
-                                const statusC=outcome.status==="LOST"?"#c0392b":outcome.status.includes("WIN")?"#b8860b":"#1a4a8c";
-                                return(
-                                  <div style={{...S.card,padding:14,borderLeft:`3px solid ${statusC}`}}>
-                                    <div style={S.section}>Your Bet Result</div>
-                                    <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:bet.betType==="EACH WAY"?8:0}}>
-                                      {[
-                                        {l:"Staked",   v:`$${parseFloat(bet.stake).toFixed(2)}`,    bg:"#f8f8f8",  c:"#333",   border:"#ddd"},
-                                        {l:"Returned", v:`$${outcome.paid.toFixed(2)}`,             bg:"#e8eef8",  c:"#1a4a8c",border:"#6b8cbf"},
-                                        {l:"Profit",   v:`${outcome.profit>=0?"+":"-"}$${Math.abs(outcome.profit).toFixed(2)}`, bg:won?"#e8f4ec":"#fce8e8", c:won?"#1a6b3a":"#c0392b", border:won?"#6bbf8c":"#f0c0c0"},
-                                      ].map(x=>(
-                                        <div key={x.l} style={{padding:"10px 12px",background:x.bg,border:`1px solid ${x.border}`,borderRadius:4,textAlign:"center"}}>
-                                          <div style={S.label}>{x.l}</div>
-                                          <div style={{fontFamily:"'Playfair Display',serif",fontSize:21,fontWeight:700,color:x.c}}>{x.v}</div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                    {bet.betType==="EACH WAY"&&(
-                                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
-                                        <div style={{padding:"9px 12px",background:"#fdf8e8",border:"1px solid #e8c84a",borderRadius:4}}>
-                                          <div style={S.label}>Win Leg (${(parseFloat(bet.stake)/2).toFixed(2)})</div>
-                                          <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#b8860b"}}>${(outcome.winPaid||0).toFixed(2)}</div>
-                                          <div style={{fontSize:10,color:"#aaa"}}>{outcome.winPaid>0?"✓ Collected":"✗ Not placed"}</div>
-                                        </div>
-                                        <div style={{padding:"9px 12px",background:"#e8eef8",border:"1px solid #6b8cbf",borderRadius:4}}>
-                                          <div style={S.label}>Place Leg (${(parseFloat(bet.stake)/2).toFixed(2)})</div>
-                                          <div style={{fontFamily:"'Playfair Display',serif",fontSize:18,fontWeight:700,color:"#1a4a8c"}}>${(outcome.placePaid||0).toFixed(2)}</div>
-                                          <div style={{fontSize:10,color:"#aaa"}}>{outcome.placePaid>0?"✓ Collected":"✗ Not placed"}</div>
-                                        </div>
-                                      </div>
-                                    )}
-                                    <div style={{textAlign:"center",padding:"8px",background:won?"#e8f4ec":"#fce8e8",border:`1px solid ${won?"#6bbf8c":"#f0c0c0"}`,borderRadius:4}}>
-                                      <div style={{fontFamily:"'Playfair Display',serif",fontSize:17,fontWeight:700,color:statusC,letterSpacing:.5}}>{outcome.status}</div>
-                                    </div>
-                                  </div>
-                                );
-                              })()}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </div>
-                );
-              })()}
-            </div>
-          </div>
-        )}
-
-        {/* ══ RESULTS ══ */}
-        {activeTab==="results"&&(
-          <div>
-            {completedRaces.length===0&&(
-              <div style={{textAlign:"center",padding:"80px 20px"}}>
-                <div style={{fontFamily:"'Playfair Display',serif",fontSize:24,color:"#ccc",marginBottom:8}}>No Results Yet</div>
-                <div style={{fontSize:13,color:"#aaa"}}>Open a race, get AI tips, then simulate a result</div>
-              </div>
-            )}
-            <div style={{display:"flex",flexDirection:"column",gap:10}}>
-              {completedRaces.map((race,idx)=>{
-                const result=results[race.id], bet=bets[race.id], outcome=calcBetOutcome(bet,result);
-                const won=outcome&&outcome.status!=="LOST";
-                const statusC=!outcome?"#aaa":outcome.status==="LOST"?"#c0392b":outcome.status.includes("WIN")?"#b8860b":"#1a4a8c";
-                const hue=STATE_HUE[race.state]||"#1a6b3a";
-
-                return(
-                  <div key={race.id} className="fade-up" style={{...S.card,borderLeft:`3px solid ${statusC}`,animationDelay:`${idx*.04}s`}}>
-                    <div style={{padding:"12px 16px",borderBottom:"1px solid #f0ece6",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                      <div>
-                        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
-                          <span style={{fontSize:9,fontWeight:700,color:hue,letterSpacing:2,fontFamily:"'DM Mono',monospace"}}>{race.state}</span>
-                          <span style={{fontSize:9,color:"#aaa",fontFamily:"'DM Mono',monospace"}}>{race.meeting} · R{race.raceNumber}</span>
-                        </div>
-                        <div style={{fontFamily:"'Playfair Display',serif",fontSize:15,fontWeight:700,color:"#1a1a1a"}}>{race.raceName}</div>
-                        {bet&&(
-                          <div style={{marginTop:4,display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-                            <span style={{fontSize:10,color:"#aaa"}}>Bet:</span>
-                            <BoxChip n={bet.runnerNumber} size={16}/>
-                            <span style={{fontSize:10,color:"#555"}}>{race.runners.find(r=>r.number===bet.runnerNumber)?.name}</span>
-                            <span style={{...S.pill(bet.betType==="WIN"?"#fdf8e8":bet.betType==="PLACE"?"#e8eef8":"#e8f4ec",bet.betType==="WIN"?"#b8860b":bet.betType==="PLACE"?"#1a4a8c":"#1a6b3a",bet.betType==="WIN"?"#e8c84a":bet.betType==="PLACE"?"#6b8cbf":"#6bbf8c")}}>{bet.betType}</span>
-                            <span style={{fontSize:10,color:"#888",fontFamily:"'DM Mono',monospace"}}>${parseFloat(bet.stake).toFixed(2)}</span>
-                          </div>
-                        )}
-                      </div>
-                      {outcome&&(
-                        <div style={{textAlign:"right"}}>
-                          <div style={{...S.pill(won?"#e8f4ec":"#fce8e8",statusC,won?"#6bbf8c":"#f0c0c0"),marginBottom:6,display:"inline-block"}}>{outcome.status}</div>
-                          <div style={{fontFamily:"'Playfair Display',serif",fontSize:22,fontWeight:700,color:outcome.profit>=0?"#1a6b3a":"#c0392b"}}>
-                            {outcome.profit>=0?"+":"-"}${Math.abs(outcome.profit).toFixed(2)}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div style={{padding:"10px 16px",display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                      <div>
-                        <div style={S.section}>Result</div>
-                        {result.positions.slice(0,3).map((dog,pos)=>{
-                          const isBet=dog.number===bet?.runnerNumber;
-                          return(
-                            <div key={dog.number} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 8px",marginBottom:3,borderRadius:4,
-                              background:pos===0?"#fffdf0":pos===1?"#f8f8f8":"#fdf5f0",
-                              border:`1px solid ${isBet?"#e8c84a":"transparent"}`}}>
-                              <span style={{fontSize:11,fontWeight:700,color:pos===0?"#b8860b":pos===1?"#888":"#cd7f32",width:14}}>{pos+1}</span>
-                              <BoxChip n={dog.number} size={18}/>
-                              <span style={{flex:1,fontSize:11,fontWeight:isBet?700:400,color:"#1a1a1a"}}>{dog.name}</span>
-                              <span style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"#b8860b",fontWeight:600}}>${dog.odds}</span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      <div>
-                        <div style={S.section}>Key Dividends</div>
-                        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5}}>
-                          {[
-                            {l:"Win",      d:`Box ${result.dividends.win.runner}`,  a:result.dividends.win.amount,          c:"#b8860b",bg:"#fdf8e8",border:"#e8c84a"},
-                            {l:"Place 1",  d:`Box ${result.dividends.place[0].runner}`, a:result.dividends.place[0].amount, c:"#555",bg:"#f8f8f8",border:"#ddd"},
-                            {l:"Exacta",   d:result.dividends.exacta.runners,            a:result.dividends.exacta.amount,   c:"#1a6b3a",bg:"#e8f4ec",border:"#6bbf8c"},
-                            {l:"Trifecta", d:result.dividends.trifecta.runners,          a:result.dividends.trifecta.amount, c:"#6b1a6b",bg:"#f3e8f3",border:"#c89bcf"},
-                          ].map(div=>(
-                            <div key={div.l} style={{padding:"7px 9px",background:div.bg,border:`1px solid ${div.border}`,borderRadius:4}}>
-                              <div style={{...S.label,fontSize:8,marginBottom:1}}>{div.l}</div>
-                              <div style={{fontSize:9,color:"#aaa",fontFamily:"'DM Mono',monospace",marginBottom:2}}>{div.d}</div>
-                              <div style={{fontFamily:"'Playfair Display',serif",fontSize:16,fontWeight:700,color:div.c}}>${div.a}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        <div style={{textAlign:"center",marginTop:32,padding:"16px 0",borderTop:"1px solid #e8e4de"}}>
-          <div style={{fontSize:10,color:"#bbb",letterSpacing:1,fontFamily:"'DM Mono',monospace"}}>
-            GREYHOUND ORACLE v23 · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  const filtered = selState === 'ALL' ? meetings : meetings.filter(m => m.state === selState);
+  document.getElementById('meeting-list').innerHTML = filtered.map(m => {
+    const col = STATE_HUE[m.state] || '#1a6b3a';
+    return `<button class="meeting-btn ${selMeeting===m.id?'active':''}" onclick="selectMeeting('${m.id}')" style="border-left-color:${col}">
+      <div class="meeting-name" style="color:${selMeeting===m.id?col:'#333'}">${m.name}</div>
+      <div class="meeting-meta"><span style="color:${col}">${m.state}</span><span>0/${m.races.length}</span></div>
+    </button>`;
+  }).join('');
 }
 
+function renderMain() {
+  const panel = document.getElementById('main-panel');
+  if (!selMeeting) {
+    panel.innerHTML = '<div class="placeholder"><div style="font-size:24px;color:#ccc;margin-bottom:8px">Select a Meeting</div><div>Choose a venue from the sidebar to view the race card</div></div>';
+    return;
+  }
+  const m = meetings.find(x => x.id === selMeeting);
+  if (!m) return;
+  const col = STATE_HUE[m.state] || '#1a6b3a';
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<GreyhoundTipster />);
-  </script>
+  if (!selRace) {
+    panel.innerHTML = `
+      <div class="meeting-header" style="background:${col}">
+        <div>
+          <div style="font-size:9px;letter-spacing:3px;opacity:.7">${m.state} · ${m.races.length} RACES</div>
+          <div style="font-size:24px;font-weight:900">${m.name}</div>
+        </div>
+      </div>
+      ${m.races.map(r => {
+        const mins = getMins(r.startTime);
+        const urgency = mins < 5 ? '#c0392b' : mins < 15 ? '#e67e22' : col;
+        return `<button class="race-btn" style="border-left-color:${urgency}" onclick="selectRace('${r.id}')">
+          <div class="race-num" style="color:${col}">R${r.raceNumber}</div>
+          <div class="race-info">
+            <div class="race-name">${r.raceName}</div>
+            <div class="race-meta">${fmtTime(r.startTime)} · ${r.grade} · ${r.runners?r.runners.length:0} runners</div>
+          </div>
+          <div class="race-time" style="color:${urgency}">${mins}m</div>
+        </button>`;
+      }).join('')}`;
+    return;
+  }
+
+  const race = m.races.find(r => r.id === selRace);
+  if (!race) return;
+  const pick = picks[race.id];
+  const mins = getMins(race.startTime);
+  const urgency = mins < 5 ? '#c0392b' : mins < 15 ? '#e67e22' : col;
+
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <button class="back-btn" onclick="selRace=null;renderMain()">← Back</button>
+      <div class="race-nav">
+        ${m.races.map(r => `<button class="race-nav-btn ${r.id===selRace?'active':''}" onclick="selectRace('${r.id}')" style="${r.id===selRace?'background:'+col+';border-color:'+col+';color:#fff':''}"">R${r.raceNumber}</button>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-header">
+        <div>
+          <div class="card-title" style="color:${col}">${m.name.toUpperCase()} · ${race.distance}M · ${race.grade.toUpperCase()}</div>
+          <div class="race-full-name">${race.raceName}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:9px;color:#aaa;letter-spacing:1px">STARTS IN</div>
+          <div style="font-size:28px;font-weight:900;color:${urgency};line-height:1">${mins}m</div>
+          <div style="font-size:10px;color:#888">${fmtTime(race.startTime)}</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Box</th><th>Dog</th><th>Trainer</th><th>Best</th><th>Win</th><th>Place</th></tr></thead>
+          <tbody>
+            ${race.runners && race.runners.length > 0 ? race.runners.map(r => `
+              <tr>
+                <td>${boxChip(r.number)}</td>
+                <td style="font-size:12px;font-weight:${pick&&pick.winner.number===r.number?700:400}">${r.name}</td>
+                <td style="font-size:11px;color:#888">${r.trainer}</td>
+                <td style="font-size:11px;color:#1a6b3a;font-weight:600">${r.bestTime}s</td>
+                <td style="font-size:12px;font-weight:700;color:#b8860b">$${r.odds}</td>
+                <td style="font-size:12px;color:#1a4a8c">$${r.placeOdds}</td>
+              </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:20px">No runner data available</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    ${!pick ? `<button class="ai-btn" onclick="getAIPick('${race.id}')">Get AI Selections →</button>` : ''}
+    <div id="ai-area-${race.id}">
+      ${pick ? `
+        <div class="ai-result">
+          <div class="ai-label">AI Selection</div>
+          <div class="ai-winner">
+            ${boxChip(pick.winner.number, 28)}
+            <span class="ai-name">${pick.winner.name}</span>
+            <span style="font-size:11px;color:#1a6b3a;font-weight:600">Confidence: ${pick.winner.confidence}</span>
+          </div>
+          <div class="ai-analysis">${pick.analysis}</div>
+          <div class="ai-bestbet">Best Bet: ${pick.bestBet} · ${pick.value}</div>
+        </div>
+        ${pick.top3 && pick.top3.length > 0 ? `
+        <div class="card" style="padding:14px">
+          <div class="card-title" style="margin-bottom:10px">Top 3 Selections</div>
+          <div style="display:flex;gap:8px">
+            ${pick.top3.map((sel,i) => {
+              const medals = ['🥇','🥈','🥉'];
+              const runner = race.runners.find(r => r.number === sel.number);
+              return `<div style="flex:1;padding:10px;background:${i===0?'#fffdf0':i===1?'#f8f8f8':'#fdf5f0'};border:1px solid ${i===0?'#e8c84a':'#ddd'};border-radius:4px">
+                <div style="font-size:14px;margin-bottom:6px">${medals[i]}</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">${boxChip(sel.number,18)}<span style="font-size:12px;font-weight:600">${sel.name}</span></div>
+                <div style="font-size:10px;color:#888">${sel.reason}</div>
+                ${runner ? `<div style="margin-top:4px;font-size:11px;color:#b8860b;font-weight:700">$${runner.odds}</div>` : ''}
+              </div>`;
+            }).join('')}
+          </div>
+        </div>` : ''}
+      ` : ''}
+    </div>
+  `;
+}
+
+// Load live data
+try {
+  const r = await fetch('/.netlify/functions/races');
+  const d = await r.json();
+  if (d.meetings && d.meetings.length > 0) {
+    meetings = d.meetings;
+    document.getElementById('status-bar').style.background = '#e8f4ec';
+    document.getElementById('status-bar').style.color = '#1a6b3a';
+    document.getElementById('status-bar').innerHTML = '● Live data from thedogs.com.au · ' + meetings.length + ' meetings loaded';
+    document.getElementById('live-badge').innerHTML = '<span class="live-badge">● LIVE</span>';
+    document.getElementById('hdr-sub').textContent = meetings.length + ' MEETINGS · AUSTRALIA';
+  }
+} catch(e) {
+  document.getElementById('status-bar').style.background = '#fff8e8';
+  document.getElementById('status-bar').innerHTML = '⚠ Live data unavailable — ' + e.message;
+}
+
+renderSidebar();
+renderMain();
+</script>
+
+<div style="max-width:1100px;margin:0 auto;padding:0 24px">
+  <div class="footer">GREYHOUND ORACLE v25 · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED</div>
+</div>
 </body>
 </html>

@@ -72,59 +72,54 @@ function extractRaceLinks(html, venueSlug, today) {
 }
 
 // Parse runners from thedogs.com.au HTML table
-// Structure: <table class="race-runners ..."><tbody><tr class="race-runner">...
 function parseRunners(data, html) {
   const runners = [];
   if (!html) return runners;
 
-  // Split into tbody blocks - each tbody is one runner
-  const tbodies = html.split("<tbody>");
+  // Find the race-runners table
+  const tableStart = html.indexOf('class="race-runners');
+  if (tableStart === -1) return runners;
+  const tableEnd = html.indexOf('</table>', tableStart);
+  const table = html.slice(tableStart, tableEnd);
+
+  // Split by race-runner rows
+  const rows = table.split('class="accordion__anchor race-runner');
   
-  for (const tbody of tbodies.slice(1)) { // skip first split
-    // Skip scratched runners
-    if (tbody.includes("race-runner--scratched")) continue;
-    
-    // Box number from rug sprite: name="rug_4" -> box 4
-    const rugMatch = tbody.match(/name="rug_([0-9])"/);
+  for (const row of rows.slice(1)) {
+    if (row.includes("race-runner--scratched")) continue;
+
+    // Box from rug sprite name="rug_N"
+    const rugMatch = row.match(/name="rug_([1-8])"/);
     const boxNum = rugMatch ? parseInt(rugMatch[1]) : 0;
     if (!boxNum) continue;
 
-    // Dog name from link
-    const nameMatch = tbody.match(/class="[^"]*race-runners__name__dog[^"]*"[^>]*>[^<]*<a[^>]*>([^<]+)<\/a>/);
+    // Dog name - inside race-runners__name__dog div, first anchor
+    const nameMatch = row.match(/race-runners__name__dog[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>/);
     const name = nameMatch ? nameMatch[1].trim() : "Unknown";
 
-    // Best time
-    const timeMatch = tbody.match(/class="race-runners__name__time">([^<]+)</);
+    // Best time - span.race-runners__name__time
+    const timeMatch = row.match(/race-runners__name__time">([^<]+)</);
     const bestTime = timeMatch ? timeMatch[1].trim() : "—";
 
-    // Trainer
-    const trainerMatch = tbody.match(/class="race-runners__trainer"><a[^>]*>([^<]+)<\/a>/);
+    // Trainer - td.race-runners__trainer > a
+    const trainerMatch = row.match(/race-runners__trainer[^>]*>[\s\S]*?<a[^>]*>([^<]+)<\/a>/);
     const trainer = trainerMatch ? trainerMatch[1].trim() : "—";
 
-    // Starting price (SP) - used as odds
-    const spMatch = tbody.match(/class="race-runners__starting-price">\$([0-9.]+)</);
+    // SP odds
+    const spMatch = row.match(/race-runners__starting-price[^>]*>\$?([0-9.]+)/);
     const sp = spMatch ? parseFloat(spMatch[1]) : 0;
 
-    // Finish position if result
-    const posMatch = tbody.match(/class="race-runners__finish-position">([^<]+)</);
+    // Finish position
+    const posMatch = row.match(/race-runners__finish-position[^>]*>([^<]+)</);
     const position = posMatch ? posMatch[1].trim() : null;
 
     const odds = sp > 0 ? sp : 0;
     const placeOdds = odds > 0 ? Math.round((1 + (odds - 1) * 0.38) * 100) / 100 : 0;
 
-    runners.push({
-      number:    boxNum,
-      name,
-      trainer,
-      form:      "—",  // form needs separate page
-      bestTime,
-      odds,
-      placeOdds,
-      finishPosition: position,
-    });
+    runners.push({ number: boxNum, name, trainer, form: "—", bestTime, odds, placeOdds, finishPosition: position });
   }
-  
-  // Sort by box number
+
+  console.log("Parsed " + runners.length + " runners from HTML table");
   return runners.sort((a, b) => a.number - b.number);
 }
 

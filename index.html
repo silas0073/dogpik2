@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Greyhound Oracle v25</title>
+  <title>Greyhound Oracle v27</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f2ed;color:#1a1a1a}
@@ -11,7 +11,7 @@
     .title{font-size:32px;font-weight:900;letter-spacing:-1px}
     .title span{color:#c8a84a}
     .subtitle{font-size:11px;color:#666;margin-top:4px}
-    .live-badge{background:#e8f4ec;color:#1a6b3a;border:1px solid #6bbf8c;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
+    .live-badge{background:#e8f4ec;color:#1a6b3a;border:1px solid #6bbf8c;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;margin-left:12px}
     .tabs{background:#fff;border-bottom:2px solid #e8e4de;display:flex;padding:0 24px}
     .tab{padding:12px 20px;border:none;border-bottom:3px solid transparent;background:transparent;font-size:13px;cursor:pointer;color:#888}
     .tab.active{border-bottom-color:#1a6b3a;color:#1a6b3a;font-weight:700}
@@ -33,20 +33,22 @@
     .race-btn:hover{background:#f8f6f2}
     .race-num{font-size:18px;font-weight:700;width:32px;color:#1a6b3a}
     .race-info{flex:1}
-    .race-name{font-size:12px;font-weight:500}
+    .race-name-text{font-size:12px;font-weight:500}
     .race-meta{font-size:10px;color:#aaa;margin-top:2px}
-    .race-time{font-size:17px;font-weight:700;color:#1a6b3a}
+    .race-time{font-size:17px;font-weight:700}
     .back-btn{padding:6px 14px;background:#fff;border:1px solid #ddd;border-radius:4px;font-size:12px;cursor:pointer;margin-bottom:12px}
     .race-nav{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:12px}
     .race-nav-btn{width:30px;height:30px;border:1px solid #ddd;background:#f4f4f4;color:#888;font-size:10px;font-weight:700;border-radius:4px;cursor:pointer}
     .race-nav-btn.active{background:#1a6b3a;border-color:#1a6b3a;color:#fff}
+    .race-nav-btn.done{background:#fce8e8;border-color:#f0c0c0;color:#c0392b}
     .card{background:#fff;border:1px solid #e8e4de;border-radius:6px;overflow:hidden;margin-bottom:8px}
+    .card-pad{padding:14px}
     .card-header{padding:14px 18px;background:#f8f6f2;border-bottom:1px solid #e8e4de;display:flex;justify-content:space-between;align-items:center}
-    .card-title{font-size:9px;font-weight:700;letter-spacing:2.5px;color:#888;text-transform:uppercase;margin-bottom:4px}
+    .sec-title{font-size:9px;font-weight:700;letter-spacing:2.5px;color:#888;text-transform:uppercase;margin-bottom:8px}
     .race-full-name{font-size:20px;font-weight:700}
     table{width:100%;border-collapse:collapse}
     th{padding:8px 12px;font-size:9px;letter-spacing:1.5px;color:#999;text-align:left;font-weight:700;text-transform:uppercase;border-bottom:2px solid #f0ece6}
-    td{padding:9px 12px;border-bottom:1px solid #f5f2ed}
+    td{padding:9px 12px;border-bottom:1px solid #f5f2ed;font-size:12px}
     tr:hover td{background:#f8f6f2}
     .box-chip{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:3px;color:#fff;font-size:12px;font-weight:700}
     .ai-btn{width:100%;padding:13px;background:#1a6b3a;border:none;color:#fff;font-size:13px;font-weight:700;border-radius:5px;cursor:pointer;margin-bottom:8px}
@@ -60,23 +62,53 @@
     .loading{text-align:center;padding:16px;color:#888;font-size:12px}
     .status-bar{padding:5px 24px;font-size:11px;border-bottom:1px solid #ddd}
     .footer{text-align:center;padding:16px 0;border-top:1px solid #e8e4de;margin-top:32px;font-size:10px;color:#bbb;letter-spacing:1px}
+    .result-row{display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:4px;border-radius:4px;border:1px solid transparent}
+    .result-row.pos-1{background:#fffdf0;border-color:#e8c84a}
+    .result-row.pos-2{background:#f8f8f8;border-color:#e0e0e0}
+    .result-row.pos-3{background:#fdf5f0;border-color:#e8c0a0}
+    .result-row.pos-other{background:#fafafa}
+    .pos-num{width:20px;font-size:13px;font-weight:700;text-align:center}
+    .div-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+    .div-card{padding:10px 12px;border-radius:4px;border:1px solid}
+    .div-label{font-size:9px;font-weight:700;letter-spacing:1.5px;color:#888;text-transform:uppercase;margin-bottom:2px}
+    .div-runners{font-size:10px;color:#aaa;margin-bottom:2px}
+    .div-amount{font-size:19px;font-weight:700}
+    .bet-selector{background:#fff;border:1px solid #e8e4de;border-radius:6px;padding:14px;margin-bottom:8px}
+    .bet-types{display:flex;gap:6px;margin-bottom:10px}
+    .bet-type-btn{flex:1;padding:8px 4px;border:1.5px solid #e0e0e0;background:#f8f8f8;color:#888;font-size:10px;font-weight:400;border-radius:4px;cursor:pointer}
+    .bet-type-btn.win-active{background:#fdf8e8;border-color:#b8860b;color:#b8860b;font-weight:700}
+    .bet-type-btn.place-active{background:#e8eef8;border-color:#1a4a8c;color:#1a4a8c;font-weight:700}
+    .bet-type-btn.ew-active{background:#e8f4ec;border-color:#1a6b3a;color:#1a6b3a;font-weight:700}
+    .stake-row{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+    .stake-input{flex:1;padding:7px 10px;border:1px solid #ddd;border-radius:4px;font-size:13px;outline:none}
+    .stake-quick{padding:6px 9px;background:#f4f4f4;border:1px solid #e0e0e0;color:#666;font-size:10px;cursor:pointer;border-radius:4px}
+    .stake-quick.active{background:#1a6b3a;border-color:#1a6b3a;color:#fff}
+    .return-preview{display:flex;gap:8px;margin-top:8px}
+    .return-box{flex:1;padding:9px 12px;border-radius:4px;border:1px solid}
+    .return-label{font-size:9px;letter-spacing:1px;margin-bottom:2px;font-weight:700;text-transform:uppercase}
+    .return-value{font-size:18px;font-weight:700}
+    .ledger-item{text-align:center;padding:6px 12px;border-left:1px solid #333}
+    .completed-badge{background:#fce8e8;color:#c0392b;border:1px solid #f0c0c0;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600}
   </style>
 </head>
 <body>
 
 <div class="header">
   <div>
-    <div class="title">GREYHOUND <span>ORACLE</span></div>
+    <div style="display:flex;align-items:center;gap:0">
+      <div class="title">GREYHOUND <span>ORACLE</span></div>
+      <span id="live-badge"></span>
+    </div>
     <div class="subtitle" id="hdr-sub">Loading...</div>
   </div>
-  <div id="live-badge"></div>
+  <div id="ledger" style="margin-left:auto;display:flex;align-items:center;gap:0"></div>
 </div>
 
 <div id="status-bar" class="status-bar" style="background:#fff8e8;color:#b8860b">Loading live race data...</div>
 
 <div class="tabs">
-  <button class="tab active" onclick="showTab('upcoming')">Upcoming</button>
-  <button class="tab" onclick="showTab('results')">Results</button>
+  <button class="tab active" id="tab-upcoming" onclick="showTab('upcoming')">Upcoming</button>
+  <button class="tab" id="tab-results" onclick="showTab('results')">Results</button>
 </div>
 
 <div class="main" id="upcoming-tab">
@@ -94,21 +126,23 @@
 </div>
 
 <div id="results-tab" style="display:none;max-width:1100px;margin:0 auto;padding:20px 24px">
-  <div class="placeholder" style="color:#aaa">No results yet — simulate a race result first</div>
+  <div id="results-panel"></div>
 </div>
 
 <script type="module">
-const BOX_COLORS = ['#1a6b3a','#c0392b','#1a4a8c','#f39c12','#6b1a6b','#2c3e50','#c0392b','#1a6b6b'];
-const STATE_HUE = {NSW:'#1a6b3a',VIC:'#1a4a8c',QLD:'#8c3a1a',WA:'#6b1a6b',SA:'#1a6b6b',TAS:'#3a1a6b'};
+const BOX_COLORS = ['#1a6b3a','#c0392b','#1a4a8c','#f39c12','#6b1a6b','#2c3e50','#e74c3c','#1a6b6b'];
+const STATE_HUE  = {NSW:'#1a6b3a',VIC:'#1a4a8c',QLD:'#8c3a1a',WA:'#6b1a6b',SA:'#1a6b6b',TAS:'#3a1a6b'};
 
 let meetings = [];
-let selState = 'ALL';
+let selState  = 'ALL';
 let selMeeting = null;
-let selRace = null;
-let picks = {};
+let selRace    = null;
+let picks      = {};
+let bets       = {}; // bets[raceId] = {runnerNumber, betType, stake, isAI}
 
 function boxChip(n, size=22) {
-  return `<span class="box-chip" style="width:${size}px;height:${size}px;background:${BOX_COLORS[(n-1)%BOX_COLORS.length]};font-size:${size*.5}px">${n}</span>`;
+  const bg = BOX_COLORS[(n-1) % BOX_COLORS.length];
+  return `<span class="box-chip" style="width:${size}px;height:${size}px;background:${bg};font-size:${Math.round(size*.5)}px">${n}</span>`;
 }
 
 function fmtTime(iso) {
@@ -119,36 +153,67 @@ function getMins(iso) {
   return Math.max(0, Math.floor((new Date(iso) - Date.now()) / 60000));
 }
 
+function isCompleted(race) {
+  return race.runners && race.runners.some(r => r.finishPosition && r.finishPosition !== null);
+}
+
+function getFinishOrder(race) {
+  const posMap = {'1st':1,'2nd':2,'3rd':3,'4th':4,'5th':5,'6th':6,'7th':7,'8th':8};
+  return [...race.runners]
+    .filter(r => r.finishPosition)
+    .sort((a,b) => (posMap[a.finishPosition]||99) - (posMap[b.finishPosition]||99));
+}
+
+function calcDividends(race) {
+  const order = getFinishOrder(race);
+  if (order.length < 3) return null;
+  const [w, p1, p2] = order;
+  const winDiv  = w.odds;
+  const pl1     = Math.round((1 + (w.odds  - 1) * 0.3)  * 100) / 100;
+  const pl2     = Math.round((1 + (p1.odds - 1) * 0.25) * 100) / 100;
+  const pl3     = Math.round((1 + (p2.odds - 1) * 0.22) * 100) / 100;
+  const exacta  = Math.round(w.odds * p1.odds * 0.7  * 100) / 100;
+  const quinella= Math.round(Math.min(w.odds, p1.odds) * 0.9 * 100) / 100;
+  const trifecta= Math.round(w.odds * p1.odds * p2.odds * 0.5 * 100) / 100;
+  return {
+    win:      { runner: w.number,  name: w.name,  amount: winDiv },
+    place:    [
+      { runner: w.number,  name: w.name,  amount: pl1 },
+      { runner: p1.number, name: p1.name, amount: pl2 },
+      { runner: p2.number, name: p2.name, amount: pl3 },
+    ],
+    exacta:   { runners: `${w.number}/${p1.number}`,                      amount: exacta   },
+    quinella: { runners: `${Math.min(w.number,p1.number)}/${Math.max(w.number,p1.number)}`, amount: quinella },
+    trifecta: { runners: `${w.number}/${p1.number}/${p2.number}`,         amount: trifecta },
+  };
+}
+
 window.showTab = function(tab) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='upcoming')||(i===1&&tab==='results')));
+  document.getElementById('tab-upcoming').classList.toggle('active', tab==='upcoming');
+  document.getElementById('tab-results').classList.toggle('active', tab==='results');
   document.getElementById('upcoming-tab').style.display = tab==='upcoming' ? 'flex' : 'none';
-  document.getElementById('results-tab').style.display = tab==='results' ? 'block' : 'none';
+  document.getElementById('results-tab').style.display  = tab==='results'  ? 'block' : 'none';
+  if (tab==='results') renderResults();
 };
 
 window.selectState = function(s) {
-  selState = s;
-  selMeeting = null;
-  selRace = null;
-  renderSidebar();
-  renderMain();
+  selState = s; selMeeting = null; selRace = null;
+  renderSidebar(); renderMain();
 };
 
 window.selectMeeting = function(id) {
-  selMeeting = id;
-  selRace = null;
-  renderSidebar();
-  renderMain();
+  selMeeting = id; selRace = null;
+  renderSidebar(); renderMain();
 };
 
 window.selectRace = function(id) {
-  selRace = id;
-  renderMain();
+  selRace = id; renderMain();
 };
 
 window.getAIPick = async function(raceId) {
-  const m = meetings.find(x => x.races.some(r => r.id === raceId));
+  const m    = meetings.find(x => x.races.some(r => r.id === raceId));
   const race = m && m.races.find(r => r.id === raceId);
-  if (!race) return;
+  if (!race || !race.runners || race.runners.length === 0) return;
 
   document.getElementById('ai-area-' + raceId).innerHTML = '<div class="loading">Analysing form data...</div>';
 
@@ -161,9 +226,9 @@ Respond ONLY with valid JSON, no markdown:
 {"winner":{"number":1,"name":"Name","confidence":"High"},"top3":[{"number":1,"name":"Name","reason":"brief"},{"number":2,"name":"Name","reason":"brief"},{"number":3,"name":"Name","reason":"brief"}],"analysis":"2 sentences.","bestBet":"Win","value":"brief"}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res  = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type':'application/json'},
       body: JSON.stringify({model:'claude-sonnet-4-20250514', max_tokens:600, messages:[{role:'user',content:prompt}]})
     });
     const data = await res.json();
@@ -172,23 +237,218 @@ Respond ONLY with valid JSON, no markdown:
     const fb = race.runners.reduce((a,b) => b.odds < a.odds ? b : a);
     picks[raceId] = {winner:{number:fb.number,name:fb.name,confidence:'Medium'},top3:[],analysis:'Based on market pricing and form figures.',bestBet:'Win',value:'Market favourite.'};
   }
+  // Auto-set bet to AI pick
+  const p = picks[raceId];
+  if (p && p.winner) {
+    const betType = p.bestBet && p.bestBet.toLowerCase().includes('each') ? 'EACH WAY' : p.bestBet && p.bestBet.toLowerCase().includes('place') ? 'PLACE' : 'WIN';
+    bets[raceId] = {runnerNumber: p.winner.number, betType, stake:'10', isAI:true};
+  }
+  renderLedger();
   renderMain();
 };
 
+function renderLedger() {
+  const allRaces = meetings.flatMap(m => m.races);
+  const bettedCompleted = allRaces.filter(r => isCompleted(r) && bets[r.id]);
+  if (bettedCompleted.length === 0) { document.getElementById('ledger').innerHTML = ''; return; }
+  let staked=0, returns=0, winners=0;
+  bettedCompleted.forEach(r => {
+    const b = bets[r.id];
+    const order = getFinishOrder(r);
+    const divs = calcDividends(r);
+    if (!divs || !b) return;
+    const stake = parseFloat(b.stake) || 0;
+    staked += stake;
+    const isWin = divs.win.runner === b.runnerNumber;
+    const placedRunners = divs.place.map(p => p.runner);
+    const isPlace = placedRunners.includes(b.runnerNumber);
+    const placedDiv = divs.place.find(p => p.runner === b.runnerNumber);
+    let ret = 0;
+    if (b.betType === 'WIN' && isWin) ret = stake * divs.win.amount;
+    else if (b.betType === 'PLACE' && isPlace && placedDiv) ret = stake * placedDiv.amount;
+    else if (b.betType === 'EACH WAY') {
+      if (isWin) ret += (stake/2) * divs.win.amount;
+      if (isPlace && placedDiv) ret += (stake/2) * placedDiv.amount;
+    }
+    returns += ret;
+    if (ret > 0) winners++;
+  });
+  const profit = returns - staked;
+  const strike = bettedCompleted.length ? Math.round(winners/bettedCompleted.length*100) : 0;
+  document.getElementById('ledger').innerHTML = [
+    {l:'Staked',  v:'$'+Math.round(staked),  c:'#aaa'},
+    {l:'Returns', v:'$'+Math.round(returns), c:'#6b9fd4'},
+    {l:'P/L',     v:(profit>=0?'+':'')+' $'+Math.round(Math.abs(profit)), c:profit>=0?'#4caf76':'#e05a4e'},
+    {l:'Strike',  v:strike+'%', c:'#c8a84a'},
+  ].map(s => `<div class="ledger-item">
+    <div style="font-size:8px;color:#666;letter-spacing:1.5px">${s.l.toUpperCase()}</div>
+    <div style="font-size:18px;font-weight:700;color:${s.c};line-height:1.2">${s.v}</div>
+  </div>`).join('');
+}
+
+function betTypeClass(type, active) {
+  if (!active) return 'bet-type-btn';
+  if (type==='WIN') return 'bet-type-btn win-active';
+  if (type==='PLACE') return 'bet-type-btn place-active';
+  return 'bet-type-btn ew-active';
+}
+
+function renderBetSelector(raceId, race) {
+  const b = bets[raceId];
+  if (!b) return '';
+  const runner = race.runners.find(r => r.number === b.runnerNumber);
+  if (!runner) return '';
+  const stake = parseFloat(b.stake) || 0;
+  const isAI = b.isAI;
+
+  let returnPreview = '';
+  if (stake > 0) {
+    if (b.betType === 'WIN' || b.betType === 'EACH WAY') {
+      const winReturn = (stake * (b.betType==='EACH WAY'?0.5:1) * runner.odds).toFixed(2);
+      returnPreview += `<div class="return-box" style="background:#fdf8e8;border-color:#e8c84a">
+        <div class="return-label" style="color:#b8860b">Win Return</div>
+        <div class="return-value" style="color:#b8860b">$${winReturn}</div></div>`;
+    }
+    if (b.betType === 'PLACE' || b.betType === 'EACH WAY') {
+      const placeReturn = (stake * (b.betType==='EACH WAY'?0.5:1) * runner.placeOdds).toFixed(2);
+      returnPreview += `<div class="return-box" style="background:#e8eef8;border-color:#6b8cbf">
+        <div class="return-label" style="color:#1a4a8c">Place Return</div>
+        <div class="return-value" style="color:#1a4a8c">$${placeReturn}</div></div>`;
+    }
+    if (b.betType === 'EACH WAY') {
+      returnPreview += `<div class="return-box" style="background:#e8f4ec;border-color:#6bbf8c">
+        <div class="return-label" style="color:#1a6b3a">Total Stake</div>
+        <div class="return-value" style="color:#1a6b3a">$${stake.toFixed(2)}</div></div>`;
+    }
+  }
+
+  return `<div class="bet-selector">
+    <div class="sec-title" style="margin-bottom:10px">
+      Your Bet ${isAI ? '<span style="background:#e8f4ec;color:#1a6b3a;border:1px solid #6bbf8c;padding:2px 7px;border-radius:3px;font-size:9px;margin-left:6px">★ AI PICK</span>' 
+                      : '<span style="background:#e8eef8;color:#1a4a8c;border:1px solid #6b8cbf;padding:2px 7px;border-radius:3px;font-size:9px;margin-left:6px">✎ MY PICK</span>'}
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      ${boxChip(runner.number, 22)}
+      <span style="font-size:14px;font-weight:700">${runner.name}</span>
+      <span style="padding:2px 7px;background:#fdf8e8;border:1px solid #d4a830;color:#b8860b;font-size:10px;border-radius:3px">WIN $${runner.odds}</span>
+      <span style="padding:2px 7px;background:#e8eef8;border:1px solid #6b8cbf;color:#1a4a8c;font-size:10px;border-radius:3px">PLC $${runner.placeOdds}</span>
+      <select onchange="updateBetRunner('${raceId}', this.value)" style="margin-left:auto;padding:5px 8px;border:1px solid #ddd;border-radius:4px;font-size:11px;cursor:pointer">
+        ${race.runners.map(r => `<option value="${r.number}" ${r.number===b.runnerNumber?'selected':''}">Box ${r.number} — ${r.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="bet-types">
+      ${['WIN','PLACE','EACH WAY'].map(t => `<button class="${betTypeClass(t, b.betType===t)}" onclick="updateBetType('${raceId}','${t}')">${t}</button>`).join('')}
+    </div>
+    <div class="stake-row">
+      <span style="font-size:10px;color:#888;white-space:nowrap">STAKE $</span>
+      <input class="stake-input" type="number" min="1" value="${b.stake}" onchange="updateStake('${raceId}', this.value)"/>
+      ${[5,10,20,50].map(v => `<button class="stake-quick${b.stake==v?' active':''}" onclick="updateStake('${raceId}','${v}')">${v}</button>`).join('')}
+    </div>
+    ${returnPreview ? `<div class="return-preview">${returnPreview}</div>` : ''}
+  </div>`;
+}
+
 function renderSidebar() {
   const states = ['ALL', ...Array.from(new Set(meetings.map(m => m.state))).sort()];
-  document.getElementById('state-filters').innerHTML = states.map(s =>
-    `<button class="state-btn ${selState===s?'active':''}" onclick="selectState('${s}')" style="${selState===s?'background:'+( STATE_HUE[s]||'#1a6b3a')+';border-color:'+(STATE_HUE[s]||'#1a6b3a')+';color:#fff':''}">${s}</button>`
-  ).join('');
+  document.getElementById('state-filters').innerHTML = states.map(s => {
+    const col = STATE_HUE[s] || '#1a6b3a';
+    const act = selState === s;
+    return `<button class="state-btn${act?' active':''}" onclick="selectState('${s}')" style="${act?'background:'+col+';border-color:'+col+';color:#fff':''}">${s}</button>`;
+  }).join('');
 
   const filtered = selState === 'ALL' ? meetings : meetings.filter(m => m.state === selState);
   document.getElementById('meeting-list').innerHTML = filtered.map(m => {
-    const col = STATE_HUE[m.state] || '#1a6b3a';
-    return `<button class="meeting-btn ${selMeeting===m.id?'active':''}" onclick="selectMeeting('${m.id}')" style="border-left-color:${col}">
-      <div class="meeting-name" style="color:${selMeeting===m.id?col:'#333'}">${m.name}</div>
-      <div class="meeting-meta"><span style="color:${col}">${m.state}</span><span>0/${m.races.length}</span></div>
+    const col  = STATE_HUE[m.state] || '#1a6b3a';
+    const done = m.races.filter(r => isCompleted(r)).length;
+    const act  = selMeeting === m.id;
+    return `<button class="meeting-btn${act?' active':''}" onclick="selectMeeting('${m.id}')" style="border-left-color:${col}">
+      <div class="meeting-name" style="color:${act?col:'#333'}">${m.name}</div>
+      <div class="meeting-meta"><span style="color:${col};font-weight:600">${m.state}</span><span>${done}/${m.races.length}</span></div>
     </button>`;
   }).join('');
+}
+
+function renderResultsForRace(race, m) {
+  const col   = STATE_HUE[m.state] || '#1a6b3a';
+  const order = getFinishOrder(race);
+  const divs  = calcDividends(race);
+  const posColor = ['#b8860b','#888','#cd7f32'];
+  const posCls   = ['pos-1','pos-2','pos-3','pos-other'];
+
+  return `
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-header">
+        <div>
+          <div style="font-size:9px;color:${col};letter-spacing:2px;font-weight:700;margin-bottom:4px">${m.state} · ${m.name.toUpperCase()} · ${race.distance}M</div>
+          <div style="font-size:15px;font-weight:700">${race.raceName}</div>
+          <div style="font-size:10px;color:#aaa;margin-top:2px">${race.grade} · ${fmtTime(race.startTime)}</div>
+        </div>
+        <span class="completed-badge">RESULT</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px">
+        <div>
+          <div class="sec-title">Finishing Order</div>
+          ${order.slice(0,4).map((dog,i) => `
+            <div class="result-row ${posCls[i]||'pos-other'}">
+              <div class="pos-num" style="color:${posColor[i]||'#ccc'}">${i+1}</div>
+              ${boxChip(dog.number, 20)}
+              <div style="flex:1;font-size:12px;font-weight:${i===0?700:400}">${dog.name}</div>
+              <div style="font-size:11px;color:#b8860b;font-weight:700">$${dog.odds}</div>
+            </div>`).join('')}
+        </div>
+        ${divs ? `
+        <div>
+          <div class="sec-title">Dividends</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            ${[
+              {l:'Win',      d:'Box '+divs.win.runner,      a:divs.win.amount,          c:'#b8860b', bg:'#fdf8e8', bc:'#e8c84a'},
+              {l:'Place 1',  d:'Box '+divs.place[0].runner, a:divs.place[0].amount,     c:'#555',    bg:'#f8f8f8', bc:'#ddd'},
+              {l:'Exacta',   d:divs.exacta.runners,         a:divs.exacta.amount,       c:'#1a6b3a', bg:'#e8f4ec', bc:'#6bbf8c'},
+              {l:'Quinella', d:divs.quinella.runners,       a:divs.quinella.amount,     c:'#1a4a8c', bg:'#e8eef8', bc:'#6b8cbf'},
+              {l:'Place 2',  d:'Box '+divs.place[1].runner, a:divs.place[1].amount,     c:'#555',    bg:'#f8f8f8', bc:'#ddd'},
+              {l:'Trifecta', d:divs.trifecta.runners,       a:divs.trifecta.amount,     c:'#6b1a6b', bg:'#f3e8f3', bc:'#c89bcf'},
+            ].map(div => `
+              <div class="div-card" style="background:${div.bg};border-color:${div.bc}">
+                <div class="div-label">${div.l}</div>
+                <div class="div-runners">${div.d}</div>
+                <div class="div-amount" style="color:${div.c}">$${div.a}</div>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
+      </div>
+    </div>`;
+}
+
+window.updateBetRunner = function(raceId, numStr) {
+  const num = parseInt(numStr);
+  const m = meetings.find(x => x.races.some(r => r.id===raceId));
+  const race = m && m.races.find(r => r.id===raceId);
+  const runner = race && race.runners.find(r => r.number===num);
+  if (runner) { bets[raceId] = {...bets[raceId], runnerNumber:num, isAI:false}; renderMain(); }
+};
+window.updateBetType = function(raceId, type) {
+  if (bets[raceId]) { bets[raceId] = {...bets[raceId], betType:type}; renderMain(); }
+};
+window.updateStake = function(raceId, val) {
+  if (bets[raceId]) { bets[raceId] = {...bets[raceId], stake:String(val)}; renderMain(); }
+};
+window.addManualBet = function(raceId, runnerNum) {
+  bets[raceId] = {runnerNumber:runnerNum, betType:'WIN', stake:'10', isAI:false};
+  renderMain();
+};
+
+function renderResults() {
+  const panel = document.getElementById('results-panel');
+  const completedRaces = meetings.flatMap(m =>
+    m.races.filter(r => isCompleted(r)).map(r => ({race:r, meeting:m}))
+  );
+  if (completedRaces.length === 0) {
+    panel.innerHTML = '<div class="placeholder">No completed races yet</div>';
+    return;
+  }
+  panel.innerHTML = completedRaces.map(({race,meeting}) => renderResultsForRace(race, meeting)).join('');
+  // Update tab label
+  document.getElementById('tab-results').textContent = `Results (${completedRaces.length})`;
 }
 
 function renderMain() {
@@ -205,20 +465,28 @@ function renderMain() {
     panel.innerHTML = `
       <div class="meeting-header" style="background:${col}">
         <div>
-          <div style="font-size:9px;letter-spacing:3px;opacity:.7">${m.state} · ${m.races.length} RACES</div>
+          <div style="font-size:9px;letter-spacing:3px;opacity:.7;margin-bottom:4px">${m.state} · ${m.races.length} RACES</div>
           <div style="font-size:24px;font-weight:900">${m.name}</div>
         </div>
+        <div style="text-align:right;font-size:12px;opacity:.8">${[...new Set(m.races.map(r=>r.distance))].sort((a,b)=>a-b).join(' · ')}m</div>
       </div>
       ${m.races.map(r => {
-        const mins = getMins(r.startTime);
-        const urgency = mins < 5 ? '#c0392b' : mins < 15 ? '#e67e22' : col;
+        const comp   = isCompleted(r);
+        const order  = comp ? getFinishOrder(r) : [];
+        const mins   = getMins(r.startTime);
+        const urgency = comp ? '#aaa' : mins < 5 ? '#c0392b' : mins < 15 ? '#e67e22' : col;
         return `<button class="race-btn" style="border-left-color:${urgency}" onclick="selectRace('${r.id}')">
           <div class="race-num" style="color:${col}">R${r.raceNumber}</div>
           <div class="race-info">
-            <div class="race-name">${r.raceName}</div>
+            <div class="race-name-text">${r.raceName}</div>
             <div class="race-meta">${fmtTime(r.startTime)} · ${r.grade} · ${r.runners?r.runners.length:0} runners</div>
           </div>
-          <div class="race-time" style="color:${urgency}">${mins}m</div>
+          ${comp && order[0] ? `
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:9px;color:#aaa;letter-spacing:1px">RESULT</div>
+              <div style="display:flex;align-items:center;gap:4px;justify-content:flex-end">${boxChip(order[0].number,16)}<span style="font-size:11px;font-weight:700;color:#b8860b">$${order[0].odds}</span></div>
+            </div>` : `
+            <div class="race-time" style="color:${urgency}">${mins}m</div>`}
         </button>`;
       }).join('')}`;
     return;
@@ -226,78 +494,177 @@ function renderMain() {
 
   const race = m.races.find(r => r.id === selRace);
   if (!race) return;
-  const pick = picks[race.id];
-  const mins = getMins(race.startTime);
-  const urgency = mins < 5 ? '#c0392b' : mins < 15 ? '#e67e22' : col;
+  const comp  = isCompleted(race);
+  const order = comp ? getFinishOrder(race) : [];
+  const divs  = comp ? calcDividends(race) : null;
+  const pick  = picks[race.id];
+  const mins  = getMins(race.startTime);
+  const urgency = comp ? '#aaa' : mins < 5 ? '#c0392b' : mins < 15 ? '#e67e22' : col;
+  const posColor = ['#b8860b','#888','#cd7f32'];
+  const posCls   = ['pos-1','pos-2','pos-3','pos-other'];
 
   panel.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
       <button class="back-btn" onclick="selRace=null;renderMain()">← Back</button>
       <div class="race-nav">
-        ${m.races.map(r => `<button class="race-nav-btn ${r.id===selRace?'active':''}" onclick="selectRace('${r.id}')" style="${r.id===selRace?'background:'+col+';border-color:'+col+';color:#fff':''}"">R${r.raceNumber}</button>`).join('')}
+        ${m.races.map(r => {
+          const c2 = isCompleted(r);
+          const act = r.id === selRace;
+          return `<button class="race-nav-btn${act?' active':c2?' done':''}" onclick="selectRace('${r.id}')" style="${act?'background:'+col+';border-color:'+col+';color:#fff':''}">R${r.raceNumber}</button>`;
+        }).join('')}
       </div>
     </div>
+
     <div class="card" style="margin-bottom:12px">
       <div class="card-header">
         <div>
-          <div class="card-title" style="color:${col}">${m.name.toUpperCase()} · ${race.distance}M · ${race.grade.toUpperCase()}</div>
+          <div style="font-size:9px;color:${col};letter-spacing:2.5px;font-weight:700;margin-bottom:4px">${m.name.toUpperCase()} · ${race.distance}M · ${race.grade.toUpperCase()}</div>
           <div class="race-full-name">${race.raceName}</div>
         </div>
+        ${comp ? '<span class="completed-badge">COMPLETED</span>' : `
         <div style="text-align:right">
           <div style="font-size:9px;color:#aaa;letter-spacing:1px">STARTS IN</div>
           <div style="font-size:28px;font-weight:900;color:${urgency};line-height:1">${mins}m</div>
           <div style="font-size:10px;color:#888">${fmtTime(race.startTime)}</div>
-        </div>
+        </div>`}
       </div>
       <div style="overflow-x:auto">
         <table>
-          <thead><tr><th>Box</th><th>Dog</th><th>Trainer</th><th>Best</th><th>Win</th><th>Place</th></tr></thead>
+          <thead><tr>
+            <th>Box</th><th>Dog</th><th>Trainer</th><th>Best</th><th>Win</th><th>Place</th>
+            ${comp ? '<th>Result</th>' : ''}
+          </tr></thead>
           <tbody>
-            ${race.runners && race.runners.length > 0 ? race.runners.map(r => `
-              <tr>
-                <td>${boxChip(r.number)}</td>
-                <td style="font-size:12px;font-weight:${pick&&pick.winner.number===r.number?700:400}">${r.name}</td>
-                <td style="font-size:11px;color:#888">${r.trainer}</td>
-                <td style="font-size:11px;color:#1a6b3a;font-weight:600">${r.bestTime}s</td>
-                <td style="font-size:12px;font-weight:700;color:#b8860b">$${r.odds}</td>
-                <td style="font-size:12px;color:#1a4a8c">$${r.placeOdds}</td>
-              </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;color:#aaa;padding:20px">No runner data available</td></tr>'}
+            ${race.runners && race.runners.length > 0 ? race.runners.map(r => {
+              const pos = order.findIndex(o => o.number === r.number);
+              const rowBg = pos===0?'#fffdf0':pos===1?'#f8f8f8':pos===2?'#fdf5f0':'';
+              const isPicked = pick && pick.winner && pick.winner.number === r.number;
+              const isBet = bets[race.id] && bets[race.id].runnerNumber === r.number;
+              return `<tr style="${rowBg?'background:'+rowBg:''};cursor:${comp?'default':'pointer'}" ${comp?'':' onclick="addManualBet(\'' + race.id + '\',' + r.number + ')" title="Click to bet on this dog"'}>
+                <td>${boxChip(r.number)}${isPicked?'<span style="color:#1a6b3a;margin-left:4px;font-size:12px">★</span>':''}${isBet&&!isPicked?'<span style="color:#1a4a8c;margin-left:4px;font-size:12px">✎</span>':''}</td>
+                <td style="font-weight:${isBet||isPicked||pos===0?700:400}">${r.name}</td>
+                <td style="color:#888">${r.trainer}</td>
+                <td style="color:#1a6b3a;font-weight:600">${r.bestTime}s</td>
+                <td style="font-weight:700;color:#b8860b">$${r.odds}</td>
+                <td style="color:#1a4a8c">$${r.placeOdds}</td>
+                ${comp ? `<td style="font-weight:${pos===0?700:400};color:${posColor[pos]||'#aaa'}">${r.finishPosition||'—'}</td>` : ''}
+              </tr>`;
+            }).join('') : `<tr><td colspan="${comp?7:6}" style="text-align:center;color:#aaa;padding:20px">No runner data</td></tr>`}
           </tbody>
         </table>
       </div>
     </div>
 
-    ${!pick ? `<button class="ai-btn" onclick="getAIPick('${race.id}')">Get AI Selections →</button>` : ''}
-    <div id="ai-area-${race.id}">
-      ${pick ? `
-        <div class="ai-result">
-          <div class="ai-label">AI Selection</div>
-          <div class="ai-winner">
-            ${boxChip(pick.winner.number, 28)}
-            <span class="ai-name">${pick.winner.name}</span>
-            <span style="font-size:11px;color:#1a6b3a;font-weight:600">Confidence: ${pick.winner.confidence}</span>
+    ${comp && bets[race.id] ? (() => {
+      const b = bets[race.id];
+      const divs2 = calcDividends(race);
+      if (!divs2) return '';
+      const stake = parseFloat(b.stake) || 0;
+      const isWin = divs2.win.runner === b.runnerNumber;
+      const placedRunners = divs2.place.map(p => p.runner);
+      const isPlace = placedRunners.includes(b.runnerNumber);
+      const placedDiv = divs2.place.find(p => p.runner === b.runnerNumber);
+      let ret = 0, status = 'LOST';
+      if (b.betType==='WIN' && isWin) { ret = stake * divs2.win.amount; status = 'WIN'; }
+      else if (b.betType==='PLACE' && isPlace && placedDiv) { ret = stake * placedDiv.amount; status = 'PLACED'; }
+      else if (b.betType==='EACH WAY') {
+        if (isWin) { ret += (stake/2)*divs2.win.amount; status='WIN + PLACE'; }
+        if (isPlace && placedDiv) { ret += (stake/2)*placedDiv.amount; status = status==='WIN + PLACE'?'WIN + PLACE':'PLACE ONLY'; }
+        if (!isWin && !isPlace) status = 'LOST';
+      }
+      const profit = ret - stake;
+      const won = status !== 'LOST';
+      const statusC = status==='LOST'?'#c0392b':status.includes('WIN')?'#b8860b':'#1a4a8c';
+      return `<div class="card card-pad" style="margin-bottom:8px;border-left:3px solid ${statusC}">
+        <div class="sec-title">Your Bet Result ${b.isAI?'<span style="background:#e8f4ec;color:#1a6b3a;border:1px solid #6bbf8c;padding:2px 7px;border-radius:3px;font-size:9px">★ AI PICK</span>':'<span style="background:#e8eef8;color:#1a4a8c;border:1px solid #6b8cbf;padding:2px 7px;border-radius:3px;font-size:9px">✎ MY PICK</span>'}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px">
+          <div style="padding:10px;background:#f8f8f8;border:1px solid #ddd;border-radius:4px;text-align:center">
+            <div style="font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase">Staked</div>
+            <div style="font-size:21px;font-weight:700;color:#333">$${stake.toFixed(2)}</div>
           </div>
-          <div class="ai-analysis">${pick.analysis}</div>
-          <div class="ai-bestbet">Best Bet: ${pick.bestBet} · ${pick.value}</div>
+          <div style="padding:10px;background:#e8eef8;border:1px solid #6b8cbf;border-radius:4px;text-align:center">
+            <div style="font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase">Returned</div>
+            <div style="font-size:21px;font-weight:700;color:#1a4a8c">$${ret.toFixed(2)}</div>
+          </div>
+          <div style="padding:10px;background:${won?'#e8f4ec':'#fce8e8'};border:1px solid ${won?'#6bbf8c':'#f0c0c0'};border-radius:4px;text-align:center">
+            <div style="font-size:9px;color:#888;letter-spacing:1px;text-transform:uppercase">Profit</div>
+            <div style="font-size:21px;font-weight:700;color:${won?'#1a6b3a':'#c0392b'}">${profit>=0?'+':'-'}$${Math.abs(profit).toFixed(2)}</div>
+          </div>
         </div>
-        ${pick.top3 && pick.top3.length > 0 ? `
-        <div class="card" style="padding:14px">
-          <div class="card-title" style="margin-bottom:10px">Top 3 Selections</div>
-          <div style="display:flex;gap:8px">
-            ${pick.top3.map((sel,i) => {
-              const medals = ['🥇','🥈','🥉'];
-              const runner = race.runners.find(r => r.number === sel.number);
-              return `<div style="flex:1;padding:10px;background:${i===0?'#fffdf0':i===1?'#f8f8f8':'#fdf5f0'};border:1px solid ${i===0?'#e8c84a':'#ddd'};border-radius:4px">
-                <div style="font-size:14px;margin-bottom:6px">${medals[i]}</div>
-                <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">${boxChip(sel.number,18)}<span style="font-size:12px;font-weight:600">${sel.name}</span></div>
-                <div style="font-size:10px;color:#888">${sel.reason}</div>
-                ${runner ? `<div style="margin-top:4px;font-size:11px;color:#b8860b;font-weight:700">$${runner.odds}</div>` : ''}
-              </div>`;
-            }).join('')}
-          </div>
-        </div>` : ''}
-      ` : ''}
+        <div style="text-align:center;padding:8px;background:${won?'#e8f4ec':'#fce8e8'};border:1px solid ${won?'#6bbf8c':'#f0c0c0'};border-radius:4px">
+          <div style="font-size:17px;font-weight:700;color:${statusC}">${status}</div>
+        </div>
+      </div>`;
+    })() : ''}
+
+    ${comp && order.length > 0 ? `
+    <div class="card card-pad" style="margin-bottom:8px">
+      <div class="sec-title">Finishing Order</div>
+      ${order.slice(0,4).map((dog,i) => `
+        <div class="result-row ${posCls[i]||'pos-other'}">
+          <div class="pos-num" style="color:${posColor[i]||'#ccc'}">${i+1}</div>
+          ${boxChip(dog.number, 22)}
+          <div style="flex:1;font-size:12px;font-weight:${i===0?700:400}">${dog.name}</div>
+          <div style="font-size:11px;color:#888">${dog.trainer}</div>
+          <div style="font-size:12px;font-weight:700;color:#b8860b">$${dog.odds}</div>
+        </div>`).join('')}
     </div>
+
+    ${divs ? `
+    <div class="card card-pad" style="margin-bottom:8px">
+      <div class="sec-title">Dividends — $1 unit</div>
+      <div class="div-grid">
+        ${[
+          {l:'Win',      d:'Box '+divs.win.runner,      a:divs.win.amount,      c:'#b8860b',bg:'#fdf8e8',bc:'#e8c84a'},
+          {l:'Exacta',   d:divs.exacta.runners,         a:divs.exacta.amount,   c:'#1a6b3a',bg:'#e8f4ec',bc:'#6bbf8c'},
+          {l:'Quinella', d:divs.quinella.runners,       a:divs.quinella.amount, c:'#1a4a8c',bg:'#e8eef8',bc:'#6b8cbf'},
+          {l:'Place 1',  d:'Box '+divs.place[0].runner, a:divs.place[0].amount, c:'#555',   bg:'#f8f8f8',bc:'#ddd'},
+          {l:'Place 2',  d:'Box '+divs.place[1].runner, a:divs.place[1].amount, c:'#555',   bg:'#f8f8f8',bc:'#ddd'},
+          {l:'Trifecta', d:divs.trifecta.runners,       a:divs.trifecta.amount, c:'#6b1a6b',bg:'#f3e8f3',bc:'#c89bcf'},
+        ].map(div => `
+          <div class="div-card" style="background:${div.bg};border-color:${div.bc}">
+            <div class="div-label">${div.l}</div>
+            <div class="div-runners">${div.d}</div>
+            <div class="div-amount" style="color:${div.c}">$${div.a}</div>
+          </div>`).join('')}
+      </div>
+    </div>` : ''}` : ''}
+
+    ${bets[race.id] && !comp ? renderBetSelector(race.id, race) : ''}
+
+    ${!comp ? `
+      ${!pick ? `<button class="ai-btn" onclick="getAIPick('${race.id}')">Get AI Selections →</button>` : ''}
+      <div id="ai-area-${race.id}">
+        ${pick ? `
+          <div class="ai-result">
+            <div class="ai-label">AI Selection</div>
+            <div class="ai-winner">
+              ${boxChip(pick.winner.number, 28)}
+              <span class="ai-name">${pick.winner.name}</span>
+              <span style="font-size:11px;color:#1a6b3a;font-weight:600">Confidence: ${pick.winner.confidence}</span>
+            </div>
+            <div class="ai-analysis">${pick.analysis}</div>
+            <div class="ai-bestbet">Best Bet: ${pick.bestBet} · ${pick.value}</div>
+          </div>
+          ${pick.top3 && pick.top3.length ? `
+          <div class="card card-pad" style="margin-bottom:8px">
+            <div class="sec-title">Top 3 Selections</div>
+            <div style="display:flex;gap:8px">
+              ${pick.top3.map((sel,i) => {
+                const medals = ['🥇','🥈','🥉'];
+                const runner = race.runners.find(r => r.number === sel.number);
+                return `<div style="flex:1;padding:10px;background:${i===0?'#fffdf0':i===1?'#f8f8f8':'#fdf5f0'};border:1px solid ${i===0?'#e8c84a':'#ddd'};border-radius:4px">
+                  <div style="font-size:14px;margin-bottom:6px">${medals[i]}</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">${boxChip(sel.number,18)}<span style="font-size:12px;font-weight:600">${sel.name}</span></div>
+                  <div style="font-size:10px;color:#888;margin-bottom:4px">${sel.reason}</div>
+                  ${runner ? `<div style="font-size:12px;font-weight:700;color:#b8860b">$${runner.odds}</div>` : ''}
+                </div>`;
+              }).join('')}
+            </div>
+          </div>` : ''}
+        ` : ''}
+      </div>
+    ` : ''}
   `;
 }
 
@@ -307,14 +674,17 @@ try {
   const d = await r.json();
   if (d.meetings && d.meetings.length > 0) {
     meetings = d.meetings;
+    const completedCount = meetings.flatMap(m => m.races).filter(r => isCompleted(r)).length;
+    const totalRaces = meetings.flatMap(m => m.races).length;
     document.getElementById('status-bar').style.background = '#e8f4ec';
     document.getElementById('status-bar').style.color = '#1a6b3a';
-    document.getElementById('status-bar').innerHTML = '● Live data from thedogs.com.au · ' + meetings.length + ' meetings loaded';
-    document.getElementById('live-badge').innerHTML = '<span class="live-badge">● LIVE</span>';
-    document.getElementById('hdr-sub').textContent = meetings.length + ' MEETINGS · AUSTRALIA';
+    document.getElementById('status-bar').innerHTML = '● Live data from thedogs.com.au · ' + meetings.length + ' meetings · ' + completedCount + ' results available';
+    document.getElementById('live-badge').innerHTML = '<span class="live-badge" style="margin-left:12px">● LIVE</span>';
+    document.getElementById('hdr-sub').textContent = meetings.length + ' MEETINGS · ' + totalRaces + ' RACES · AUSTRALIA';
+    document.getElementById('tab-results').textContent = 'Results (' + completedCount + ')';
+    renderLedger();
   }
 } catch(e) {
-  document.getElementById('status-bar').style.background = '#fff8e8';
   document.getElementById('status-bar').innerHTML = '⚠ Live data unavailable — ' + e.message;
 }
 
@@ -323,7 +693,7 @@ renderMain();
 </script>
 
 <div style="max-width:1100px;margin:0 auto;padding:0 24px">
-  <div class="footer">GREYHOUND ORACLE v25 · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED</div>
+  <div class="footer">GREYHOUND ORACLE v27 · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED</div>
 </div>
 </body>
 </html>

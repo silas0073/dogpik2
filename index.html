@@ -11,6 +11,19 @@
 </head>
 <body>
   <div id="root"></div>
+  <script>
+    window.__liveData = null;
+    console.log('Starting live fetch...');
+    fetch('/.netlify/functions/races')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        console.log('Live data received, meetings:', d.meetings ? d.meetings.length : 0);
+        window.__liveData = d;
+        var evt = new Event('livedataready');
+        document.dispatchEvent(evt);
+      })
+      .catch(function(e){ console.error('Live fetch failed:', e.message); });
+  </script>
   <script type="text/babel">
     const { useState, useEffect } = React;
 
@@ -202,15 +215,20 @@ function GreyhoundTipster(){
   useEffect(()=>{ const t=setInterval(()=>tick(n=>n+1),30000); return()=>clearInterval(t); },[]);
 
   useEffect(()=>{
-    console.log('Fetching live data...');
-    fetch('https://resplendent-biscochitos-d9fa5c.netlify.app/.netlify/functions/races')
-      .then(r=>{ console.log('Response status:', r.status); return r.json(); })
-      .then(d=>{
-        console.log('Got data, meetings:', d.meetings ? d.meetings.length : 0);
-        if(d.meetings&&d.meetings.length>0){setMeetings(d.meetings);setIsLive(true);}
-        else { console.log('No meetings in response', d); }
-      })
-      .catch(e=>{ console.error('Fetch failed:', e.message); });
+    function applyLiveData(d) {
+      if(d && d.meetings && d.meetings.length > 0) {
+        setMeetings(d.meetings);
+        setIsLive(true);
+        console.log('Applied live data:', d.meetings.length, 'meetings');
+      }
+    }
+    if(window.__liveData) {
+      applyLiveData(window.__liveData);
+    } else {
+      document.addEventListener('livedataready', function() {
+        applyLiveData(window.__liveData);
+      });
+    }
   },[]);
 
   const allRaces       = meetings.flatMap(m=>m.races.map(r=>({...r,meeting:m.name,state:m.state,venueId:m.id})));
@@ -847,7 +865,7 @@ Respond ONLY with valid JSON, no markdown:
 
         <div style={{textAlign:"center",marginTop:32,padding:"16px 0",borderTop:"1px solid #e8e4de"}}>
           <div style={{fontSize:10,color:"#bbb",letterSpacing:1,fontFamily:"'DM Mono',monospace"}}>
-            GREYHOUND ORACLE v20 · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED
+            GREYHOUND ORACLE v23 · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED
           </div>
         </div>
       </div>

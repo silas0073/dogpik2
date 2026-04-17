@@ -202,12 +202,15 @@ function GreyhoundTipster(){
   useEffect(()=>{ const t=setInterval(()=>tick(n=>n+1),30000); return()=>clearInterval(t); },[]);
 
   useEffect(()=>{
+    console.log('Fetching live data...');
     fetch('https://resplendent-biscochitos-d9fa5c.netlify.app/.netlify/functions/races')
-      .then(r=>r.json())
+      .then(r=>{ console.log('Response status:', r.status); return r.json(); })
       .then(d=>{
+        console.log('Got data, meetings:', d.meetings ? d.meetings.length : 0);
         if(d.meetings&&d.meetings.length>0){setMeetings(d.meetings);setIsLive(true);}
+        else { console.log('No meetings in response', d); }
       })
-      .catch(()=>{});
+      .catch(e=>{ console.error('Fetch failed:', e.message); });
   },[]);
 
   const allRaces       = meetings.flatMap(m=>m.races.map(r=>({...r,meeting:m.name,state:m.state,venueId:m.id})));
@@ -844,7 +847,7 @@ Respond ONLY with valid JSON, no markdown:
 
         <div style={{textAlign:"center",marginTop:32,padding:"16px 0",borderTop:"1px solid #e8e4de"}}>
           <div style={{fontSize:10,color:"#bbb",letterSpacing:1,fontFamily:"'DM Mono',monospace"}}>
-            GREYHOUND ORACLE · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED - *****
+            GREYHOUND ORACLE v20 · FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · DATA SIMULATED
           </div>
         </div>
       </div>
